@@ -211,6 +211,58 @@ through written-down research.** Practical protocol for a mid-tier spec writer:
 skill in context + a fact-check/doctrine-review pass on the spec before handing it
 to an executor.
 
+## Experiment 3 — domain transfer (does the doctrine survive CRUD?)
+
+**Status: pre-registered 2026-07-06, not yet run.**
+
+**Question:** everything above ran in one repo, one domain — a WebGL renderer whose
+invariants are unusually gate-friendly (`< 0.5 px` is a luxury a CRUD app doesn't
+have). Does the method's edge appear in a bread-and-butter CRUD domain, where the
+"numeric threshold" role must be played by invariants (idempotency, tenant scoping,
+frozen semantics) instead of numbers?
+
+**Design:** replica of Experiment 1 in [gym-manager] (Next.js + Drizzle + vitest,
+gym-membership billing). Real pending task **E7.8**: add a confirmation dialog to
+mark-paid and a revert paid→due action. S/M, mechanical, with real traps: revert
+idempotency (already-`due` must return, not throw), frozen `markPaid` semantics
+(extend around, never edit), a Radix-portal form-detach failure mode, and **two**
+render sites (each with mobile + desktop variants) where missing one still compiles
+and passes tests.
+
+- **Arm A (spec as contract):** handed the existing hardened E7.8 spec in the prompt.
+- **Arm B2 (clean control):** goal in three sentences. The spec file is untracked in
+  the main checkout, so worktrees naturally exclude it — contamination check from
+  Experiment 1 still performed explicitly.
+
+Same model both arms (Claude Sonnet), isolated worktrees, identical operational
+rules: local gate `pnpm run validate`, no e2e, log judgment calls to NOTES.md.
+Confound acknowledged upfront: gym-manager, like cosmos, carries doctrine in
+CLAUDE.md/AGENTS.md and dense sibling tests — so this also re-tests Experiment 1's
+"the repo teaches the agent" finding in a second repo.
+
+**Predictions (written before results, 2026-07-06):**
+
+1. Both arms pass `pnpm run validate` — green does not discriminate (3rd repetition).
+2. **Wiring completeness is the CRUD trap:** the control misses at least one of the
+   four render surfaces (second list component, or a mobile/desktop variant) — the
+   class of miss that compiles, passes tests, and looks done.
+3. The control *does* write service tests (sibling-test density leaks the pattern)
+   but misses at least one of the two contract cases: idempotent-on-`due`, or
+   cross-tenant `TenantScopeError`.
+4. The control leaves `markPaid` semantics untouched (pattern-mirroring makes a
+   sibling natural) but violates the frozen surface somewhere else — most likely a
+   shared-component abstraction beyond the spec's two modes, or a schema/enum touch.
+5. **The domain claim (the reason this experiment exists):** every audited check is
+   expressible as a deterministic invariant — no screenshot, no "looks right" needed.
+   If auditing E7.8 *forces* a non-deterministic blocking check, the doctrine's gate
+   concept does not transfer to CRUD as written, and that's a finding against the
+   method.
+
+**Deferred sibling (recorded, not forgotten):** an Arm E — strong model, no spec —
+was proposed and deliberately deferred. Rationale: Experiments 1–3 test **executor
+invariance** (the method survives weaker executors), which is the load-bearing claim;
+cost accounting is a collateral benefit of that future arm, not the reason for it.
+
 ## The self-improvement loop
 
 Every executor failure gets classified with the `root-cause` taxonomy: **spec bug**
