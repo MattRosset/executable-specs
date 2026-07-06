@@ -9,6 +9,9 @@ You are diagnosing, not fixing. The fix comes out of the diagnosis, never before
 The deliverable is a **mechanism** — a sentence that explains every observation — plus
 the minimal fix that removes it.
 
+*(Nothing failed, but a decision rests on unverified premises? That's `research` —
+same epistemology, prospective instead of forensic.)*
+
 ## Non-negotiables
 
 1. **Reproduce before you theorize.** If you cannot reproduce it, your first task is

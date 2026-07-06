@@ -1,7 +1,7 @@
 {
   "name": "executable-specs",
-  "description": "Executable specs, doctrine review, root-cause procedure, and learning distillation — a working method for delegating implementation to AI agents without lowering engineering standards.",
-  "version": "0.1.0",
+  "description": "Executable specs, premise research, doctrine review, root-cause procedure, and learning distillation — a working method for delegating implementation to AI agents without lowering engineering standards.",
+  "version": "0.2.0",
   "author": {
     "name": "Matías Rosset"
   },

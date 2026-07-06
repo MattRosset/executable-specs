@@ -7,7 +7,7 @@
     {
       "name": "executable-specs",
       "source": "./",
-      "description": "Skills for spec-driven agent delegation: spec-task, doctrine-review, root-cause, distill-learning."
+      "description": "Skills for spec-driven agent delegation: research, spec-task, spec-review, doctrine-review, root-cause, distill-learning."
     }
   ]
 }

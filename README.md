@@ -26,22 +26,25 @@ deterministic gates in CI.
 ## The loop
 
 ```
-        ┌──────────────────────────────────────────────────────┐
-        │                                                      │
-   spec-task ──► implement ──► doctrine-review ──► gates in CI │
-   (strong        (any           (checklist,        (determin- │
-    model or       model)         human owns         istic     │
-    human)                        the merge)         proxies)  │
-        ▲                                               │      │
-        │            root-cause ◄── failure ────────────┘      │
-        │            (measure, don't guess)                    │
-        │                                                      │
-        └───────────── distill-learning ◄──────────────────────┘
-                       (portable patterns back into doctrine)
+        ┌────────────────────────────────────────────────────────────────────┐
+        │                                                                    │
+   research ──► spec-task ──► implement ──► doctrine-review ──► gates in CI │
+   (mint claims, (strong        (any           (checklist,        (determin- │
+    kill, or      model or       model)         human owns         istic     │
+    reframe)      human)                        the merge)         proxies)  │
+        ▲                                                             │      │
+        │                  root-cause ◄── failure ────────────────────┘      │
+        │                  (measure, don't guess)                            │
+        │                                                                    │
+        └────────────────── distill-learning ◄───────────────────────────────┘
+                            (portable patterns back into doctrine)
 ```
 
 Each arrow is a skill or template in this repo. The strong model (or you) spends its
 time where judgment lives; cheaper models execute mechanically inside a contract.
+Every producer has a verifier — specs get spec-review, diffs get doctrine-review,
+behavior gets gates — and `research` extends that invariant to the top of the chain:
+it verifies **premises**, the one error class nothing downstream can catch.
 
 ## What's in the box
 
@@ -49,6 +52,7 @@ time where judgment lives; cheaper models execute mechanically inside a contract
 |----------|------------|
 | [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md) | The executable-spec format: Goal, Frozen Interface, Out of scope, Failure modes, deterministic Acceptance gate |
 | [`doctrine/TESTING.md`](doctrine/TESTING.md) | Test philosophy: gates, anti-tests, test power, self-measuring probes, "fix the test, never the threshold" |
+| [`skills/research`](skills/research/SKILL.md) | Claude Code skill: investigate before deciding what to build — mint re-checkable claims, or kill/reframe the work they were about to justify |
 | [`skills/spec-task`](skills/spec-task/SKILL.md) | Claude Code skill: write a spec a weaker agent can execute without judgment calls |
 | [`skills/doctrine-review`](skills/doctrine-review/SKILL.md) | Claude Code skill: review a diff against the doctrine — test power, determinism, scope, freeze |
 | [`skills/spec-review`](skills/spec-review/SKILL.md) | Claude Code skill: verify a spec against the live code before handoff — facts, consistency, judgment quarantine (the pass EVALS proved non-optional) |

@@ -23,8 +23,8 @@ Do these yourself — they are the expensive part; the spec is just their record
      When a constraint doesn't fit (a cap, a limit), fix the task-local value — don't
      let the implementer add an abstraction to accommodate it.
    - *Judgment* (design, tradeoff, unknown root cause): don't spec it for a weak agent
-     yet. Do the judgment part first (or run `root-cause` / write an ADR), then spec
-     the now-mechanical remainder.
+     yet. Do the judgment part first (run `research` for open premises, `root-cause`
+     for failures, or write an ADR), then spec the now-mechanical remainder.
 3. **Decide what is frozen.** Public APIs, thresholds, gate definitions. Changing
    frozen surface is a decision, not a side effect — it needs its own thaw task.
 4. **Pre-resolve bounded decisions where the code already answers them.** An hour of
@@ -69,7 +69,8 @@ modes → Acceptance gate → Verification beyond the gate.
   transfer *only* through written research (EVALS experiment 2: no in-context method
   reproduced the one failure mode that lived in repo history alone).
 - If while writing you can't fill "Failure modes" — you don't understand the task
-  well enough to delegate it. Investigate first.
+  well enough to delegate it. Investigate first (run `research`; its claims come
+  back as Step 0 candidates with the re-check already written).
 
 ## After execution: close the loop (this is how the method improves itself)
 
