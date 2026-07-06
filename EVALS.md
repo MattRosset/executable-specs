@@ -323,6 +323,72 @@ spec-less work: a repo-level standing rule ("shipped work updates its ledger row
 would have closed most of the control's remaining gap — consistent with the running
 theme that CLAUDE.md-resident doctrine is the highest-leverage artifact per line.
 
+## Experiment 4 — does `research` catch what the flow misses? (pre-registered 2026-07-06, arms NOT yet run)
+
+**Question:** the `research` skill claims to verify premises — the one error class
+nothing downstream catches. Does it actually detect a false premise that the current
+flow (`spec-task` directly) would embed into a spec?
+
+**Design constraint discovered during setup (a finding in itself):** every candidate
+premise mined from project history was unusable — the write-it-down doctrine means
+each known falsehood is already documented in prose (`docs/research/`, task specs),
+so any arm that skims docs "detects" it without investigating. Two candidates burnt
+this way: "the Gaia sidecar already loads at runtime" (documented in
+`gaia-visibility-and-realness-problem.md`) and "procgen already tier-scales"
+(TASK-071/072 exist *because* it doesn't). **The premise class that works is
+recent-state drift: docs lag code, so discoverable prose points the *wrong* way and
+only verification (code/git) reveals the truth.** Fittingly, that is exactly the
+drift class Step 0 exists for.
+
+**The seed (auditor-verified 2026-07-06):** consigna asserts *"the Gaia octree
+manifest URL is hardcoded in the web app; prepare the work to make it configurable
+per environment."*
+
+- Ground truth: **false on main.** TASK-065 shipped it — commit `8c6a0dc`, merged
+  via PR #11. EVIDENCE: `apps/web/src/app/packs.ts:26` reads
+  `import.meta.env.VITE_GAIA_OCTREE_MANIFEST_URL ?? '<sample fallback>'`;
+  `vite-env.d.ts:5` declares it. RECHECK:
+  `grep -rn "VITE_GAIA_OCTREE_MANIFEST_URL" apps/web/src` +
+  `git log origin/main --oneline -5`.
+- Documentation state: `docs/agent-tasks/TASK-065-*.md` exists **with no completion
+  marker** — reads as pending. BACKLOG-2026-07 doesn't mention the manifest. The
+  repo's prose *supports* the false premise; the truth lives in code + git log only.
+
+**Arms** (same model — the strong one, per the skill's own "who runs this"; isolated
+worktrees of cosmos; consigna identical, handed in the prompt; no access to auditor
+memory or the design conversation):
+
+- **Arm A (treatment):** consigna + the `research` SKILL.md as contract in the prompt.
+- **Arm B (control):** consigna + the `spec-task` SKILL.md — the current flow, spec
+  written directly.
+
+**Measured (all binary or countable, from artifact + transcript):**
+
+| Check | Arm A | Arm B |
+|-------|-------|-------|
+| False premise dies | verdict = kill ("already built") citing code or git evidence | Step 0 / spec body: does it repeat the premise, omit verifying it, or catch it? |
+| Anti-theater | kill condition written in transcript *before* first code read | — |
+| Claims with teeth | auditor executes every RECHECK; % that re-verify | — |
+| Doc trap | did it find TASK-065's spec and *verify* vs *trust* it? | same |
+
+**Predictions (written before running):**
+
+1. Arm A reaches the kill verdict, citing `packs.ts` and/or the merge commit.
+2. Arm A's kill condition precedes its first code read in the transcript.
+3. ≥80% of Arm A's claims carry a RECHECK that passes when the auditor runs it.
+4. Arm B finds `TASK-065-*.md`, reads it as confirmation the work is pending
+   (docs point the wrong way), and produces a spec for already-shipped work —
+   *despite* `spec-task`'s "read the actual code" rule, because the rule directs
+   reading toward the files to change, not toward auditing the premise.
+5. **Negative finding pre-committed:** if Arm B also detects the premise (its code
+   reading reaches `packs.ts` organically), the skill's *detection* value is nil on
+   this seed and its remaining value is the claim artifact alone — that gets
+   reported as a finding against, not buried.
+
+**Optional coupling step (the flow test):** hand Arm A's research doc to a Sonnet
+`spec-task` arm; PASS = claims enter Step 0 cited with their RECHECK, no fact
+re-derivation.
+
 ## The self-improvement loop
 
 Every executor failure gets classified with the `root-cause` taxonomy: **spec bug**
