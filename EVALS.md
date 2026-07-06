@@ -116,24 +116,91 @@ code *cannot* express — e.g. a task whose wiring trap is that the "natural" pl
 compiles, passes, and never executes (see the case study's finding #3): no code
 comment exists at the place you'd wrongly edit.
 
-## Experiment 2 — who can write the spec? (spec-writer degradation)
+## Experiment 2 — who can write the spec? (the method as the transferable part)
 
-**Question:** the specs in `examples/` were written by a stronger model; does the
-method survive the spec-writer being a mid-tier model?
+**Question:** the specs in `examples/` were written by a stronger model. When a
+mid-tier model is the spec *writer*, does the method's artifact (the `spec-task`
+skill + template, handed in-context) measurably lift the spec it produces?
 
-**Design (to run):** have a mid-tier model write a spec for a task already specced by
-the strong model (without seeing that version), using the `spec-task` skill. Audit
-the result on three counts: unverified facts (paths/symbols cited from memory),
-unresolved judgment calls left to the implementer, and missing failure modes.
-Baseline for calibration: the strong model's own specs, fact-checked one day later,
-contained **3 drift bugs across 6 specs** (see
-[the case study](examples/CASE-STUDY-fact-checking-a-spec-set.md)) — the bar is not
-perfection, it's "cheap verification pass catches the rest."
+**Design:** two agents, same model (Claude Sonnet), same assignment ("write the spec
+for the next visual-quality improvement of the three overlay nebulae, per the Tier B
+research doc — you decide the scope"), isolated worktrees, prior spec drafts deleted
+unread (both arms).
 
-**Hypothesis:** spec *structure* transfers through the skill; Step 0 pre-resolution
-and failure-mode anticipation degrade with model strength — and the mandatory
-fact-check pass compensates, making "mid-tier writes + checklist verifies"
-approximately equivalent to "strong model writes."
+- **Arm C (method):** receives the `spec-task` skill rules + template section order
+  in the prompt.
+- **Arm D (control):** receives "write a detailed task specification, detailed
+  enough that another agent can implement it from the document alone."
+
+**Answer key:** the strong model's hardened spec for the same task
+([`TASK-073`](https://github.com/MattRosset/cosmos/blob/main/docs/agent-tasks/TASK-073-nebula-tier-b-distance-fade.md)),
+which contains a deliberate judgment trap: of the four Tier B items, B4 (distance
+fade) and B3 (domain warp) are mechanical, while B1 (dust absorption — needs a
+blend-mode design decision; additive can't darken) and B2 (soft particles — needs
+the depth texture) are design-first and must be *deferred, not specced*.
+
+**Audited on:** scope judgment (the B1/B2 trap), fact accuracy (paths/symbols
+verified vs recalled), gate determinism (any screenshot/"looks right" as a blocking
+check?), executor-decidability (open questions left to the implementer), frozen
+surface (is `createNebula`'s signature protected?).
+
+**Predictions (written before results, 2026-07-06):**
+
+1. Both produce plausible, well-organized documents — prose quality won't
+   discriminate; the judgment calls will.
+2. **The trap:** Arm C defers B1/B2 (the skill's mechanical-vs-judgment rule forces
+   the classification); Arm D scopes in at least one design-first item as if it were
+   mechanical.
+3. **Facts:** Arm D cites at least one path/symbol it didn't verify (or none at
+   all — prose-only spec); Arm C's Step 0 section exists and its facts check out.
+4. **Gates:** Arm D's acceptance criteria include at least one non-deterministic
+   blocking check (screenshot comparison or "visually verify"); Arm C's gate is
+   deterministic with screenshots reference-only.
+5. **Neither** reaches the answer key's depth on failure modes that require repo
+   history (the transit pop-in risk; the procgen-vs-overlay systems confusion) —
+   the honest ceiling of model-in-a-box spec-writing without accumulated context.
+
+### Results (audited 2026-07-06; both specs read in full, sampled facts re-verified against code)
+
+**Prediction scoring:** 1 ✓, 2 ✓, 3 ✗, 4 ✗, 5 half. Same pattern as Experiment 1:
+the arms beat the predictions wherever the *repo* carries the doctrine, and split
+exactly where only judgment can.
+
+**Where the control was as good as the method (predictions 3–4 missed):** Arm D read
+real code and its sampled facts all verified — it even independently discovered that
+the data contract lacks the per-field radius the fade needs. Its acceptance criteria
+were deterministic, screenshots reference-only, and it demanded the pure-function
+extraction, citing the repo's own testing rules. CLAUDE.md and
+`docs/testing-conventions.md` transferred that doctrine to an unaided agent — again.
+
+**Where the split is unmistakable (the trap, prediction 2):**
+
+| | Arm C (skill in context) | Arm D (unaided) |
+|---|---|---|
+| Scope decision | B4 only; deferred B1/B2/B3 as design-first, each with the reason | **Scoped in B1** — and made the blend-mode architecture decision *inline* (custom darken blend, second shader, new layer cap, data-contract extension) inside an implementation task |
+| Frozen surface | 6 surfaces explicitly frozen (shader files, `setOpacity` contract, field params, the sibling fade's constants, core-types shape) | No frozen section; extends `core-types` three ways as a side effect |
+| Open choices left to the implementer | 1, bounded (fade constants, with documentation obligations and guidance) | ≥7 explicit "or / pick one / prefer / if easy" forks, plus visual tuning delegated ("err on the side of too-subtle") |
+| Latent bug | Step 0 fact #4 *forces* checking the camera-context/units frame before computing distance | Uses the render-offset magnitude with **no context guard** — the exact wrong-frame silent-bug class its sibling scene guards against; also ships an acknowledged-but-unresolved transparent-sort assumption |
+| Resulting task | S/M, one system, mechanically executable | L, two systems + contract thaw + an unreviewed design decision fused in |
+
+**Prediction 5 (the ceiling), half right:** both arms found the
+procgen-vs-overlay systems-confusion guard (the research doc points to it — repo
+writeups pay again). Neither arm carried the failure mode that lives only in repo
+history: the galaxy transit flies *through* these fields, so a fade band too narrow
+relative to flight speed pops mid-flight. The answer-key spec has it; no amount of
+in-context method produced it. Accumulated project memory is the one input the
+artifact can't replace — which is exactly why findings go in `docs/research/`.
+
+**The conclusion that matters:** the unaided arm did not fail on competence — it
+failed on *classification*. It produced an impressive document that is actually a
+design proposal and an implementation task fused together, unreviewed. The skill's
+mechanical-vs-judgment rule is what turned the same model into something that
+quarantines design instead of smuggling it. **The method's irreducible core is
+judgment quarantine + frozen surface + pre-resolved decisions; structure and test
+doctrine transfer through repo docs; repo-historical failure modes transfer only
+through written-down research.** Practical protocol for a mid-tier spec writer:
+skill in context + a fact-check/doctrine-review pass on the spec before handing it
+to an executor.
 
 ## The self-improvement loop
 
