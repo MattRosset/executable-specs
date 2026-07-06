@@ -21,6 +21,15 @@ than (a), because they are the errors nothing downstream can catch:
 - **(b) Kill** — "this direction should not be built, and here is the measurement."
 - **(c) Reframe** — "the real question is different; here is what I found instead."
 
+**What this skill is actually for** (measured, EVALS experiment 4): a strong agent
+under `spec-task` detects a false premise about as well as this procedure — its
+"read the actual code" rule is enough. What it *cannot* do is stop: contracted to
+produce a spec, it specs the remainder, prioritized or not. This skill's
+differentiated value is the **verdict** — a first-class "no task should exist" —
+and the **reusable claim artifact** (10/10 auditor-re-run RECHECKs in the
+experiment) that outlives any single spec. Detection is table stakes; permission
+to kill is the product.
+
 ## When to run this (and when not)
 
 - **Before a backlog or spec batch** in an area you haven't personally read this
@@ -52,11 +61,14 @@ that ("is it actually true that…?"). Bad: "look into the search feature." Good
 the catalog sidecar ever loaded at runtime? (grep the loader call sites, then verify
 in the network log)".
 
-### Step 2 — Write the kill condition before investigating
+### Step 2 — Write the kill condition before investigating, and commit it
 For each question, state *in writing, first*: **what answer would kill or redirect
-the proposed work?** Then go looking for that answer before anything else. This is
-the anti-test of research: if you cannot name what would change your mind, you are
-not investigating, you are decorating a decision already made.
+the proposed work?** Write Steps 1–2 into the deliverable doc and **commit that file
+before opening a single source file** — the ordering must be an artifact fact, not
+a transcript fact (EVALS experiment 4: the first run investigated for two greps,
+then wrote "written before investigating" into the doc; only the transcript caught
+it). This is the anti-test of research: if you cannot name what would change your
+mind, you are not investigating, you are decorating a decision already made.
 
 ### Step 3 — Investigate by reading and measuring, never by recalling
 Every finding traces to something you observed *now*: a file you opened, a command
