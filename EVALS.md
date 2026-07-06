@@ -389,6 +389,62 @@ memory or the design conversation):
 `spec-task` arm; PASS = claims enter Step 0 cited with their RECHECK, no fact
 re-derivation.
 
+### Results (run + audited 2026-07-06, same day; auditor re-ran every RECHECK by hand)
+
+**Methodology incidents (reported, not hidden):** (1) both arms were cut off
+mid-run by a rate limit and their assigned worktrees were destroyed; both were
+resumed from transcript, created fresh worktrees at the same base, and re-verified
+their load-bearing facts there — logged in each arm's NOTES.md, runs kept.
+(2) Contamination channel: the harness injected the auditor's MEMORY.md index into
+*both* arms despite prompt instructions; both flagged it in NOTES.md per protocol.
+The index contains no line about the manifest or TASK-065 → classified low-risk.
+Lesson: "no memory to subagents" is not enforceable by prompt in this harness;
+audit the NOTES flag instead.
+
+**Predictions scored — 2/5 again:**
+
+1. ✅ Arm A: verdict **KILL (as a code task)**, citing `packs.ts:25-26`, the
+   PR #11 merge, and a two-build marker measurement (set → override in bundle,
+   unset → sample restored).
+2. ❌ **Anti-theater ordering not satisfied.** In the audited transcript, two
+   investigation greps (`manifest`, `import.meta.env|VITE_`) precede the written
+   questions/kill conditions; the doc's own header says "written before
+   investigating" — contradicted by the transcript. Mild theater signal, worth a
+   skill fix (see loop-feed). Original pre-cutoff transcript unauditable (lost).
+3. ✅ **10/10 of Arm A's claims re-verified** when the auditor executed every
+   RECHECK, including both builds of the marker sequence. 100% ≥ 80%.
+4. ❌ **Arm B caught the false premise.** The doc trap never bit: B reached the
+   truth through code + `git log` (spec-task's "read the actual code" rule), scoped
+   TASK-076 to the verified remainder only, and logged the premise failure as
+   judgment call #1. Fifth consecutive control-parity event across experiments —
+   this time it's *contract*-teaches-agent rather than repo-teaches-agent.
+5. **Negative finding fires, as pre-committed: the skill's *detection* value is
+   nil on this seed.** The existing flow already catches recent-state drift.
+
+**What survived — the artifact delta, and a real judgment fork:**
+
+- Arm A's doc is a reusable claim set: 10 auditor-re-runnable claims, a verified-
+  absences section (no staging env exists, nothing sets the var anywhere, no CDN
+  tooling), and a **Beliefs quarantine** correctly holding the two unprovable
+  externals (live site state, CDN upload status). Arm B's Step 0 facts are equally
+  verified but packaged for one spec, not for reuse.
+- The arms **disagree on the remainder**: B specced it as code (thread a repo
+  variable through `deploy.yml` + an empty-string `??`→`||` trap — a real find A
+  missed, though load-bearing only under B's own design); A classified it as
+  ops-runbook + one-line doc fix and STOPped ("a staging split is a new decision").
+  A's kill discipline prevented a spec for ops work; B's spec quietly extends
+  TASK-065's frozen contract by one clause (flagged, but a thaw-shaped decision
+  inside a task file). Both found the same dangling `.env` README reference.
+
+**Feeding the loop:** (a) transcript order is a weak anti-theater check — the
+skill should require Steps 1–2 be *written to the doc file and committed* before
+investigation starts, making the ordering an artifact fact, not a transcript fact;
+(b) the skill's differentiated value against a strong executor is the **claim
+artifact and verdict discipline** (kill/reframe as first-class outcomes, beliefs
+quarantine), not premise detection — position it that way; (c) the coupling step
+(research doc → cheap spec-writer consumes claims as Step 0) is now the live
+question, since the artifact is exactly what survived. Not yet run.
+
 ## The self-improvement loop
 
 Every executor failure gets classified with the `root-cause` taxonomy: **spec bug**
