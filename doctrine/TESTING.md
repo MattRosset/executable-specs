@@ -102,6 +102,17 @@ naive   → obvious broken alternative    → must FAIL gate
 - `naive`: `Math.fround` absolute positions, then subtract in f32
 - PASS: max screen deviation `< 0.5 px` over 300 frames
 
+**CRUD example (no numeric threshold — the invariant plays that role):** a
+"revert payment to pending" service, gated by its contract instead of a number
+(measured working in EVALS experiment 3):
+- *idempotency*: reverting an already-`due` period **returns the row** — the naive
+  implementation throws or double-writes, and fails this case
+- *tenant scope*: a cross-gym period id **must throw** — the naive implementation
+  (query by id alone) silently succeeds, and fails this case
+- *no silent no-op*: a missing id returns an **error state**, never a quiet success
+Auth, money, idempotency, and state machines are CRUD's `< 0.5 px`. If you think
+your domain has no gateable invariants, you haven't named your bug classes yet.
+
 ---
 
 ## 7. Two-layer gates (fast + slow)

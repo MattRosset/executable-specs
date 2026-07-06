@@ -63,5 +63,28 @@ modes → Acceptance gate → Verification beyond the gate.
   most valuable output after the diff itself — and the only channel through which
   repo-historical judgment reaches future spec writers (see EVALS.md experiment 2:
   it's the one thing no in-context method reproduced).
+- **Mine failure modes; don't invent them.** Before writing that section, search
+  `docs/research/` and `git log -- <the paths this task touches>` for the area's
+  history. The traps that matter are the ones that already happened — and they
+  transfer *only* through written research (EVALS experiment 2: no in-context method
+  reproduced the one failure mode that lived in repo history alone).
 - If while writing you can't fill "Failure modes" — you don't understand the task
   well enough to delegate it. Investigate first.
+
+## After execution: close the loop (this is how the method improves itself)
+
+Handing off is half the contract; the other half fires when the diff lands. Triage
+**every** judgment-call entry in the executor's NOTES.md — each one is exactly one of:
+
+- **Spec bug** — the spec was wrong or silent where it should have decided. Fix the
+  spec file, and ask: which template section should have forced this? If one exists,
+  the spec writer erred; if none does →
+- **Doctrine gap** — the template/skill never asks for what was needed. Edit the
+  template or skill *now*, citing the incident (that's how Step 0, stack facts, and
+  the precedent-grep rule all entered this repo).
+- **Executor bug** — the spec said it; the agent ignored it. Tighten the handoff
+  (spec-as-contract in the prompt, not discoverable in the tree) before blaming the
+  model.
+
+An untriaged NOTES.md entry is a lesson paid for and thrown away. Ten minutes per
+task; this is the flywheel, not the experiments.

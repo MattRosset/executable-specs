@@ -51,6 +51,7 @@ time where judgment lives; cheaper models execute mechanically inside a contract
 | [`doctrine/TESTING.md`](doctrine/TESTING.md) | Test philosophy: gates, anti-tests, test power, self-measuring probes, "fix the test, never the threshold" |
 | [`skills/spec-task`](skills/spec-task/SKILL.md) | Claude Code skill: write a spec a weaker agent can execute without judgment calls |
 | [`skills/doctrine-review`](skills/doctrine-review/SKILL.md) | Claude Code skill: review a diff against the doctrine — test power, determinism, scope, freeze |
+| [`skills/spec-review`](skills/spec-review/SKILL.md) | Claude Code skill: verify a spec against the live code before handoff — facts, consistency, judgment quarantine (the pass EVALS proved non-optional) |
 | [`skills/root-cause`](skills/root-cause/SKILL.md) | Claude Code skill: diagnose by measurement before proposing any fix; produces a mechanism, not a patch |
 | [`skills/distill-learning`](skills/distill-learning/SKILL.md) | Claude Code skill: extract portable patterns from a finished phase back into your doctrine |
 | [`templates/`](templates/) | Gate and test-spec worksheets (fatal risk, fixed scenario, PASS threshold, control that must fail) |

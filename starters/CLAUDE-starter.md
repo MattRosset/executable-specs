@@ -48,6 +48,10 @@ these rules beat predictions on doctrine adherence in both experiments.
   explicit thaw task — never as a side effect.
 - If reality contradicts the spec: stop and update the spec (or mark blocked); do not
   improvise around it.
+- Implementing agents log every judgment call (anything the task didn't decide) to a
+  NOTES file; after merge, each entry gets triaged — spec bug, executor bug, or
+  doctrine gap — and doctrine gaps become template/rule edits. Untriaged entries are
+  lessons paid for and thrown away.
 
 ## Docs map
 
