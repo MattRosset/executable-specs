@@ -55,7 +55,11 @@ understand the task well enough to delegate it.
 ## Acceptance gate
 
 Deterministic checks only — commands the implementer runs and their expected output,
-numeric thresholds where applicable. No "looks right," no wall-clock perf, no
+numeric thresholds where applicable. When a check demands a unit test, name **where
+testable code must live** (the pure-function extraction and its location per the
+repo's test scoping), or the implementer will test a *mirror* of the production code
+instead of the code (found in EVALS.md experiment 1 — the control arm's test
+re-derived the production formula, leaving the real one ungated). No "looks right," no wall-clock perf, no
 screenshots as blocking checks (those are reference-machine information for the PR).
 Every check that can fail in CI must log the chosen input and measured quantity, so a
 CI-only failure is triagable from logs alone.
