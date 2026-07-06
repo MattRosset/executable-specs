@@ -191,6 +191,15 @@ relative to flight speed pops mid-flight. The answer-key spec has it; no amount 
 in-context method produced it. Accumulated project memory is the one input the
 artifact can't replace — which is exactly why findings go in `docs/research/`.
 
+**Post-audit addendum (found while preparing the method arm's spec for merge):** Arm
+C's spec contained an internal **direction contradiction** — its Goal said
+near=visible/far=faded ("bloom in on approach"), while its function contract and
+acceptance tests encoded the inverse (`fade(0, r) → ~0`, far → 1). A literal
+implementer would have stopped at the contradiction (the Step 0 standing rule), so
+the failure is contained — but it settles the protocol question: **the verification
+pass before handoff is not optional, even for the method arm.** The hardened spec
+merged as the real artifact, with the fix recorded in its provenance header.
+
 **The conclusion that matters:** the unaided arm did not fail on competence — it
 failed on *classification*. It produced an impressive document that is actually a
 design proposal and an implementation task fused together, unreviewed. The skill's
