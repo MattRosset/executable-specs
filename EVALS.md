@@ -263,6 +263,66 @@ was proposed and deliberately deferred. Rationale: Experiments 1–3 test **exec
 invariance** (the method survives weaker executors), which is the load-bearing claim;
 cost accounting is a collateral benefit of that future arm, not the reason for it.
 
+### Results (audited 2026-07-06; both diffs reviewed by hand, both gates re-run by the auditor — not from agent self-reports)
+
+**Prediction scoring: 1 ✓, 2 ✗, 3 ✗, 4 ✗, 5 ✓ — 2/5, the same score and the same
+shape as Experiment 1.** Every prediction that bet on the control's incompetence
+missed; every prediction about what discriminates (green doesn't; determinism does)
+hit.
+
+| Audited | Arm A (spec as contract) | Arm B2 (clean control) |
+|---|---|---|
+| Gate (`pnpm run validate`, auditor-run) | ✅ 565 tests | ✅ 565 tests |
+| Render surfaces (2 components × mobile/desktop) | all four | **all four** |
+| Service contract (idempotent-on-`due`, tenant scope, `paidAt: null`) | ✅ | ✅ — plus a `not-found` case the spec didn't ask for |
+| Tests call production fn (no mirror) | ✅ | ✅ |
+| `revalidatePath` pair (`/payments` + `/members`) | ✅ | ✅ |
+| Portal form-detach trap | avoided (spec-warned; hidden form + `requestSubmit()`) | avoided (found the repo's own `duplicate-schedule-dialog` precedent) |
+| Touch target `min-h-11` | ✅ | ✅ |
+| Process integrity (ledger, runbook, component registry) | ✅ all updated | ❌ **ledger still says `pending` for shipped work**; no runbook entry |
+| Shared component (no dialog duplication) | one `BillingPeriodActionButton` | ❌ dialog logic duplicated across two components |
+| Diff | +792 (includes +187 generated UI primitive) | +486 |
+
+**The headline, third repetition and strongest yet: the repo teaches the agent.** In
+a conventions-dense CRUD repo (sibling tests, lint rules that force the right React
+shape, an existing confirm-dialog precedent), the unaided arm converged on
+essentially every correctness property — including one (confirming the revert too)
+that was a product judgment call. The spec's surviving edge narrowed to **process
+integrity** (the control's ledger now lies — the drift class that compounds across a
+project, invisible to any test suite) and **architecture** (anti-duplication the
+control had no reason to know was wanted).
+
+**The new finding — the spec is a channel, and channels carry bugs both ways.** This
+experiment produced the first case of the spec making the treatment arm *worse* in
+places:
+
+1. The spec's failure-mode section said "Radix dialog portal"; the repo is on
+   `@base-ui`. Harmless here (Arm A caught and worked around it), but it's a spec
+   fact error of exactly the class Step 0 exists for — and Step 0 as written covers
+   paths/symbols/formats, not stack facts. Template gap.
+2. The spec *prescribed* installing the ShadCN `AlertDialog` (+187 generated lines);
+   the control found the repo's existing `Dialog` confirm precedent and reused it —
+   a smaller, more consistent change. On this decision the unaided agent's judgment
+   beat the spec's. A pre-resolved decision is only as good as the inspection behind
+   it; this one was resolved from ShadCN convention, not from reading the repo's
+   existing dialogs. The control is immune to spec bugs by construction.
+
+**The domain claim held (prediction 5, the reason the experiment exists):** every
+audited check above is a deterministic invariant — greps, diffs, unit tests. CRUD's
+idempotency and tenant-scoping played the role WebGL's `< 0.5 px` plays; nothing in
+the audit forced a screenshot or a "looks right" as a blocking check. Runtime dialog
+behavior and the 320px layout remain layer-3 human checks, non-blocking, exactly as
+the doctrine assigns them. **The gate doctrine transfers to CRUD as written.**
+
+**Feeding the loop:** (a) Step 0 must include *stack facts* (UI library, framework
+idioms cited in failure modes), not just paths and formats; (b) before pre-resolving
+a UI-pattern decision, the spec writer must grep for the repo's existing precedent —
+"does the codebase already do this somewhere?" is now a spec-time checklist item;
+(c) the process-integrity delta suggests the cheapest possible intervention for
+spec-less work: a repo-level standing rule ("shipped work updates its ledger row")
+would have closed most of the control's remaining gap — consistent with the running
+theme that CLAUDE.md-resident doctrine is the highest-leverage artifact per line.
+
 ## The self-improvement loop
 
 Every executor failure gets classified with the `root-cause` taxonomy: **spec bug**
