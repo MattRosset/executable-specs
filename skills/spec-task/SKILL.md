@@ -51,5 +51,11 @@ modes → Acceptance gate → Verification beyond the gate.
 - **Size the spec to the executor.** The weaker the implementer, the more the
   failure-modes and out-of-scope sections carry. For yourself, they can be terse;
   for a cheap agent, they are the spec.
+- **Every spec carries the standing rule** (verbatim, in or near Out of scope):
+  *"Findings during this task go to `docs/research/`; scope creep goes to a new task
+  file, not into this diff."* Failure modes an implementer discovers are the project's
+  most valuable output after the diff itself — and the only channel through which
+  repo-historical judgment reaches future spec writers (see EVALS.md experiment 2:
+  it's the one thing no in-context method reproduced).
 - If while writing you can't fill "Failure modes" — you don't understand the task
   well enough to delegate it. Investigate first.

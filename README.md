@@ -54,6 +54,7 @@ time where judgment lives; cheaper models execute mechanically inside a contract
 | [`skills/root-cause`](skills/root-cause/SKILL.md) | Claude Code skill: diagnose by measurement before proposing any fix; produces a mechanism, not a patch |
 | [`skills/distill-learning`](skills/distill-learning/SKILL.md) | Claude Code skill: extract portable patterns from a finished phase back into your doctrine |
 | [`templates/`](templates/) | Gate and test-spec worksheets (fatal risk, fixed scenario, PASS threshold, control that must fail) |
+| [`starters/CLAUDE-starter.md`](starters/CLAUDE-starter.md) | Day-one CLAUDE.md for a new repo — the standing rules (write-it-down, testing, tasks) that make every future agent session better. Skills fire on demand; this is in context always. |
 | [`examples/`](examples/) | **Real specs from a real repo** — including a case study of fact-checking a spec set against a moving codebase |
 
 ## Why specs and not prompts
