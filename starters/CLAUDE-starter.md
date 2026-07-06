@@ -20,7 +20,11 @@ these rules beat predictions on doctrine adherence in both experiments.
 3. **Architecture decisions get an ADR** in `docs/decisions/` — one page: context,
    decision, consequences. The code shows *what*; only the ADR remembers *why the
    alternatives lost*.
-4. **Encode contracts as code comments at the load-bearing site.** A constant whose
+4. **Shipped work updates its ledger/progress row in the same change.** A tracking
+   table that says `pending` for shipped work is drift no test suite catches — in
+   EVALS experiment 3 it was the single biggest gap a spec-less agent left, and this
+   one standing line closes it for free.
+5. **Encode contracts as code comments at the load-bearing site.** A constant whose
    value is load-bearing (a shipped fix, a calibrated threshold) carries a comment
    saying so and pointing at the research doc. This is what lets a future agent — or a
    prompt-only one — avoid breaking it without reading anything else.

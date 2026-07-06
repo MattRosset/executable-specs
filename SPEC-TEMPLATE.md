@@ -12,7 +12,10 @@ Name the thread/initiative it belongs to so the implementer knows what NOT to so
 
 The spec was written by reading the code on <date>; the code may have moved. List the
 2–4 load-bearing facts (file paths, symbol names, formats, line ranges) the implementer
-must re-confirm before writing code. **If reality contradicts the spec: stop and update
+must re-confirm before writing code. **Stack facts count as facts:** if a failure mode
+or step names a library, framework idiom, or UI primitive, that name must come from the
+repo's actual dependencies, not the ecosystem default (EVALS experiment 3: a spec said
+"Radix" in a repo on `@base-ui` — the executor caught it; the template didn't). **If reality contradicts the spec: stop and update
 the spec (or mark blocked) — do not improvise around it.**
 
 If a bounded decision couldn't be resolved at spec time, state it here as a decision

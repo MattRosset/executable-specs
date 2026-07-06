@@ -32,6 +32,12 @@ Do these yourself — they are the expensive part; the spec is just their record
    the implementer a judgment call they're not equipped to make. If a decision truly
    can't be resolved yet, write it as an ordered decision *rule* with checkable
    preconditions and a STOP case — never as an open question.
+5. **Before pre-resolving a pattern or component choice, grep for the repo's existing
+   precedent.** "Does the codebase already do this somewhere?" outranks the ecosystem's
+   default answer. A spec is a channel: it transmits your judgment *and your errors*
+   with equal fidelity — a prescribed new primitive where the repo already had the
+   pattern produced a worse diff than no spec at all (EVALS experiment 3). An unaided
+   agent reads the repo; a specced agent obeys you. Earn the obedience.
 
 ## Spec template
 
