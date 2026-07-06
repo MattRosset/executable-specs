@@ -1,0 +1,11 @@
+{
+  "name": "executable-specs",
+  "description": "Executable specs, doctrine review, root-cause procedure, and learning distillation — a working method for delegating implementation to AI agents without lowering engineering standards.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Matías Rosset"
+  },
+  "homepage": "https://github.com/MattRosset/executable-specs",
+  "license": "MIT",
+  "keywords": ["specs", "agents", "code-review", "testing", "debugging"]
+}

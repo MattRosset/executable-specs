@@ -1,0 +1,13 @@
+{
+  "name": "executable-specs",
+  "owner": {
+    "name": "Matías Rosset"
+  },
+  "plugins": [
+    {
+      "name": "executable-specs",
+      "source": "./",
+      "description": "Skills for spec-driven agent delegation: spec-task, doctrine-review, root-cause, distill-learning."
+    }
+  ]
+}
