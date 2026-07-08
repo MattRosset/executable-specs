@@ -1,5 +1,8 @@
 # Testing Doctrine — Gates, Power, and Anti-Tests
 
+> Generado desde engineering-playbook/TESTING-DOCTRINE.md — no editar acá; editá el
+> original y re-exportá (ver [PROPAGATION.md](../PROPAGATION.md)).
+
 This is not a testing framework guide. It is a **philosophy and contract** for tests
 that actually catch bugs — especially in AI-assisted or parallel development, where
 the implementer optimizes for green.
@@ -49,6 +52,9 @@ If you only have (1), you might have false confidence.
 | Correct path passes, no control | You don't know if the test would catch the bug |
 | Threshold relaxed to green | Gate becomes decoration |
 | Scenario "simplified" to pass | You stopped measuring the real risk |
+| Gate exercises a **different code path** than production | Green while the real path is broken (cosmos: jitter probe ran the f64 CPU subtract; the bug lived in the shader's f32 sum) |
+| Metric has a **floor/ceiling** that hides the cost | A vsync-paced FPS read identical numbers for a 12× GPU-cost difference; measure what the instrument reads on a known-idle vs known-heavy case first |
+| Speed metric with **no work metric beside it** | An empty scene / dead pipeline benchmarks as "fast" trivially; log drawn points / bytes served next to the timing |
 
 ---
 
@@ -97,6 +103,12 @@ naive   → obvious broken alternative    → must FAIL gate
 **Rule:** If the control ever passes, the scenario is too easy or the assertion is wrong.
 **Fix the test, never the gate threshold** (unless a documented refinement — see §9).
 
+**For code that combines, partitions, or migrates data**, the natural anti-test is a
+**conservation-invariant**: nothing dropped, nothing duplicated, order-independent
+(total out == total in, each element lands exactly once). Prove the failure with a
+measured before/after table, then gate the invariant itself.
+**Cosmos reference:** BUG-8 combine push-down (dropped the shallower catalog on approach).
+
 **Real example:** [cosmos `jitter.test.ts`](https://github.com/MattRosset/cosmos/blob/main/packages/coords/test/jitter.test.ts)
 - `proper`: f64 subtract, then `Math.fround`
 - `naive`: `Math.fround` absolute positions, then subtract in f32
@@ -135,6 +147,8 @@ Put measurement logic **in the app** behind a URL flag:
 3. Publishes `window.__<name>Result = { …numeric fields }`
 4. E2E runner: `goto`, `waitForFunction`, `evaluate`, assert threshold
 
+**Cosmos:** [`JitterProbe.tsx`](https://github.com/MattRosset/cosmos/blob/main/apps/web/src/scene/JitterProbe.tsx) + [`e2e/tests/jitter.spec.ts`](https://github.com/MattRosset/cosmos/blob/main/e2e/tests/jitter.spec.ts)
+
 Probe checklist:
 
 - [ ] Isolated (no unrelated subsystems)
@@ -150,6 +164,63 @@ and *ask* it. In cosmos, replacing the tests' parallel camera model with query h
 (`__cosmos.pickAt`, `__cosmos.projectToScreen`) ended a months-long flaky-e2e era —
 the [taxonomy that proved it](https://github.com/MattRosset/cosmos/blob/main/docs/research/e2e-ci-flakiness-rootcause-and-query-hook.md)
 classified 16 failures at 3:1 environment-coupling over real bugs.
+
+---
+
+## 8b. Query hooks — ask the app, don't re-derive it
+
+When a test needs to know something the app already computes (a projected position,
+what a click would select, a layout box, a running total), expose a **read-only query
+hook** on the production code path and have the test *ask* — never re-implement the
+computation inside the test.
+
+A test-side parallel model charges two recurring taxes:
+
+- **Maintenance:** every production change forces a hand-resync of the model — the test
+  edit catches nothing, it just tracks.
+- **Environment coupling:** the model bakes in machine details (font geometry, DPR,
+  pixel boxes) that differ between dev and CI, producing "passes local, fails CI".
+
+Pattern: `window.__app.queryX(...)` registered from the same scope that owns the real
+objects; returns data, causes no side effect. For hit-testing, combine with the real
+DOM (`document.elementFromPoint`) instead of hard-coded boxes.
+
+**Exception:** if the test's purpose is to validate that computation itself, the oracle
+must be independent (unit test with known cases) — asking the app would be circular.
+
+**Cosmos:** `pickAt` / `projectToScreen` on `window.__cosmos` replaced a ~150-line
+parallel camera model that was the source of nearly all CI-only flake.
+
+---
+
+## 8c. Pin the adaptive input — deterministic gates
+
+A gate is only deterministic if it holds constant every input the *machine* steers.
+If the measured quantity sits downstream of an adaptive controller — a quality tier
+chosen by FPS, an autoscaled pool size, a timeout-driven retry count — pin that
+controller to a constant for the measurement. Otherwise the gate measures how fast
+the runner is, not the code (the incidental value CI gates forbid).
+
+- Pin it **unconditionally**, not `if (CI)` — a CI-only pin recreates the local-vs-CI
+  divergence you're trying to kill. The probe is a test fixture; the constant holds
+  everywhere.
+- **Exception:** when the gate *is* the test that the controller steps correctly, the
+  adaptive state is the subject — test that in a deterministic unit with synthetic
+  inputs, not inside the integration gate.
+
+**Detection → mapping → integration are three tests, not one.** Cover "does the
+controller step right?" and "does each mode yield the right value?" in units; the
+integration gate *assumes* them and asserts only its invariant, with the mode pinned.
+Letting an integration gate re-exercise a machine-adaptive detection layer is what
+makes it flaky.
+
+**Corollary:** turning a constant into an adaptive parameter invalidates every
+baseline recorded under the old constant. And a comment claiming "branch X protects
+gate Y" is not proof gate Y exercises branch X — confirm the gate's path first.
+
+**Cosmos:** a procgen draw-cap became tier-aware; a budget gate let the live
+PerformanceMonitor pick the tier, so CI's software renderer stepped it down mid-flight
+and the near-Sol peak blew the baseline. Fix: pin the probe to a fixed tier.
 
 ---
 
@@ -211,6 +282,7 @@ When reviewing a PR or agent output:
 - [ ] Are thresholds **numeric** and tied to product risk?
 - [ ] For gates: is failure doctrine clear (block + separate fix)?
 - [ ] For E2E: is the runner dumb and the app self-measuring?
+- [ ] Does the gate exercise the **same code path as production**, or a model of it?
 - [ ] Does a later gate **re-assert** this promise?
 - [ ] If it fails in CI only, is it triagable from logs alone (input + measured
       quantity logged)?
