@@ -144,7 +144,9 @@ where it runs for real. A few receipts:
 /plugin marketplace add MattRosset/executable-specs
 /plugin install executable-specs
 
-# or manually: copy skills/* into ~/.claude/skills/
+# or manually: clone the repo, then copy skills/* into ~/.claude/skills/
+# (clone, don't cherry-pick the folder — the skills reference SPEC-TEMPLATE.md
+#  and the doctrine files, which live outside skills/)
 ```
 
 **Adopt the method (any tooling):**
