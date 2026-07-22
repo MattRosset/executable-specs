@@ -35,6 +35,13 @@ NOTES.md instead of silently guessing).
 
 **Predictions (written before results, 2026-07-05):**
 
+> **Pre-registration honesty note.** Experiments 1–2's predictions were written before the
+> audit but **committed alongside their results**, so the ordering is my word, not a git
+> artifact. From Experiment 3 on, pre-registration is its own commit (`b355ec4`, `450558f`)
+> and is checkable by anyone. The `research` skill this repo ships now mandates the latter —
+> "write the kill condition before investigating, *and commit it*" — a rule this experiment
+> is the reason for.
+
 1. Both arms pass `pnpm verify` — a green suite does not discriminate; the differences
    will be in scope, contracts, and failure modes the suite doesn't gate.
 2. Arm B touches frozen surface (most likely: extends the tier table in `core-types`,
@@ -75,8 +82,14 @@ every difference that matters was invisible to the test suite.
 | Test power | tests call the production mapping fn (extracted pure) | pure fn extracted, tested | ❌ **test re-derives the production math** ("Mirrors GalaxyScene's `Math.min(1, cap/count)`" — the real formula stays inline and ungated; breaking it keeps the suite green). Violates the repo's own rule 1. |
 | The trap (perf knob coupled to visual fade) | avoided + contract re-documented at both sites | avoided | avoided (pre-existing comments carried it) |
 | Forward breadcrumbs | `medium` flagged as placeholder pending calibration; task + research cross-refs | partial | ❌ none — the future calibration task loses its pointer |
-| Judgment-call log | 2 entries (both real spec gaps — see below) | 4 entries | 2 entries |
+| Judgment-call log | 2 entries (one a real spec gap — see below; one a pattern-choice note) | 4 entries | 2 entries |
 | Diff | +163, 4 files, one package | +199, 6 files, two packages | +143, 4 files, one package |
+
+Diff totals include each arm's `NOTES.md` (A 27 lines, B 68, B2 23). **Code-only the
+ranking inverts: A +136/3 files, B +131/5, B2 +120/3** — the spec arm ships the *largest*
+code diff, and a third of the control's excess is judgment-call logging, which is the
+behavior we wanted. Prediction 4 is scored ✗ either way, but a reader checking the merged
+Arm A commit will find +136, not +163.
 
 **Prediction scoring (against the pre-registered five):** 1 ✓, 2 ✗ for the clean
 control / ✓ for the discoverable arm, 3 ✗ (both logged 2), 4 ✗ (comparable sizes,
@@ -213,7 +226,8 @@ to an executor.
 
 ## Experiment 3 — domain transfer (does the doctrine survive CRUD?)
 
-**Status: pre-registered 2026-07-06, not yet run.**
+**Status: pre-registered 2026-07-06 (commit `b355ec4`, before the arms ran), then run and
+audited the same day — results below.**
 
 **Question:** everything above ran in one repo, one domain — a WebGL renderer whose
 invariants are unusually gate-friendly (`< 0.5 px` is a luxury a CRUD app doesn't
@@ -221,8 +235,8 @@ have). Does the method's edge appear in a bread-and-butter CRUD domain, where th
 "numeric threshold" role must be played by invariants (idempotency, tenant scoping,
 frozen semantics) instead of numbers?
 
-**Design:** replica of Experiment 1 in [gym-manager] (Next.js + Drizzle + vitest,
-gym-membership billing). Real pending task **E7.8**: add a confirmation dialog to
+**Design:** replica of Experiment 1 in a second, private repo of mine (Next.js + Drizzle
++ vitest, gym-membership billing; "gym-manager" below). Real pending task **E7.8**: add a confirmation dialog to
 mark-paid and a revert paid→due action. S/M, mechanical, with real traps: revert
 idempotency (already-`due` must return, not throw), frozen `markPaid` semantics
 (extend around, never edit), a Radix-portal form-detach failure mode, and **two**
@@ -259,8 +273,9 @@ CLAUDE.md/AGENTS.md and dense sibling tests — so this also re-tests Experiment
    method.
 
 **Deferred sibling (recorded, not forgotten):** an Arm E — strong model, no spec —
-was proposed and deliberately deferred. Rationale: Experiments 1–3 test **executor
-invariance** (the method survives weaker executors), which is the load-bearing claim;
+was proposed and deliberately deferred. Rationale: Experiments 1 and 3 test **executor
+invariance** (the method survives weaker executors), which is the load-bearing claim
+— Experiment 2 asks a different question (who can *write* the spec);
 cost accounting is a collateral benefit of that future arm, not the reason for it.
 
 ### Results (audited 2026-07-06; both diffs reviewed by hand, both gates re-run by the auditor — not from agent self-reports)
@@ -323,7 +338,7 @@ spec-less work: a repo-level standing rule ("shipped work updates its ledger row
 would have closed most of the control's remaining gap — consistent with the running
 theme that CLAUDE.md-resident doctrine is the highest-leverage artifact per line.
 
-## Experiment 4 — does `research` catch what the flow misses? (pre-registered 2026-07-06, arms NOT yet run)
+## Experiment 4 — does `research` catch what the flow misses? (pre-registered 2026-07-06 in commit `450558f`, then run the same day — results below)
 
 **Question:** the `research` skill claims to verify premises — the one error class
 nothing downstream catches. Does it actually detect a false premise that the current
@@ -400,6 +415,12 @@ their load-bearing facts there — logged in each arm's NOTES.md, runs kept.
 The index contains no line about the manifest or TASK-065 → classified low-risk.
 Lesson: "no memory to subagents" is not enforceable by prompt in this harness;
 audit the NOTES flag instead.
+
+**Auditability, stated:** unlike Experiments 1–3, **no arm artifact survives** this one —
+the destroyed worktrees were never merged, so there is no branch or commit to inspect. The
+*seed's* ground truth is independently checkable in cosmos (the manifest env var, the merge
+of PR #11, the task file with no completion marker), but the arm results below are auditor
+testimony, not artifacts. Weigh them accordingly.
 
 **Predictions scored — 2/5 again:**
 

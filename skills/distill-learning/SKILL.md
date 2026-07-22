@@ -6,8 +6,9 @@ description: Extract portable engineering patterns from a finished phase, gate, 
 # Distill learnings into doctrine
 
 Two outputs:
-1. A case-study file: `docs/learnings/LEARN-<topic>-<YYYY-MM-DD>.md` (or the user's
-   playbook repo, if they keep one — ask once, then remember).
+1. A case-study file: `docs/learnings/LEARN-<topic>-<YYYY-MM-DD>.md` in this repo, or
+   the user's playbook repo if they keep one — ask once. Create the directory if it
+   doesn't exist; don't skip the output for lack of a home.
 2. Candidate rule updates to the user's standing doctrine (CLAUDE.md, a playbook file,
    or this repo's doctrine docs) — **proposed, never silently applied**.
 

@@ -51,6 +51,7 @@ it verifies **premises**, the one error class nothing downstream can catch.
 | Artifact | What it is |
 |----------|------------|
 | [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md) | The executable-spec format: Goal, Frozen Interface, Out of scope, Failure modes, deterministic Acceptance gate |
+| [`doctrine/BUILD-FOR-AGENTS.md`](doctrine/BUILD-FOR-AGENTS.md) | **How to build a repo an agent does the right thing in by default**: doctrine in the repo, reasons at the point of violation, machine-enforced boundaries, read seams, written-down failure history — and the honest boundary where the environment stops helping |
 | [`doctrine/TESTING.md`](doctrine/TESTING.md) | Test philosophy: gates, anti-tests, test power, self-measuring probes, "fix the test, never the threshold" |
 | [`skills/research`](skills/research/SKILL.md) | Claude Code skill: investigate before deciding what to build — mint re-checkable claims, or kill/reframe the work they were about to justify |
 | [`skills/spec-task`](skills/spec-task/SKILL.md) | Claude Code skill: write a spec a weaker agent can execute without judgment calls |
@@ -63,6 +64,21 @@ it verifies **premises**, the one error class nothing downstream can catch.
 | [`examples/`](examples/) | **Real specs from a real repo** — including a case study of fact-checking a spec set against a moving codebase |
 | [`EVALS.md`](EVALS.md) | **The method tested against a control** — spec vs. bare prompt, same model and task, predictions pre-registered, contaminated run reported rather than dropped |
 | [`PROPAGATION.md`](PROPAGATION.md) | Which artifacts are originals here and which are derived snapshots, and how changes flow between them |
+
+## Why the repo matters more than the prompt
+
+The experiments turned up something that reframes the whole method: in a controlled pair
+in cosmos — replicated in a second repo — an agent handed a *casual* prompt performed
+nearly as well as one handed a full spec, **because the repo taught it.** Frozen
+boundaries, a gate it can run, dense correct precedent, and doctrine written where it
+reads did the work the spec was supposed to do.
+
+So the leverage isn't the instruction you write per task; it's the world the agent wakes
+up in. A spec is a one-shot message. The repo is a standing teacher, present at every
+keystroke. [`doctrine/BUILD-FOR-AGENTS.md`](doctrine/BUILD-FOR-AGENTS.md) is how to build
+that world — including §9, the honest boundary: a good repo makes cheap the judgment
+**already made and left behind** as precedent. It does nothing for a decision the repo
+has never faced. Those still need a human.
 
 ## Why specs and not prompts
 
@@ -110,10 +126,13 @@ where it runs for real. A few receipts:
   scenario — proper f64-subtract-then-round vs. naive f32 absolute positions — with
   a `< 0.5 px over 300 frames` threshold the naive path must violate.
   ([`packages/coords/test/jitter.test.ts`](https://github.com/MattRosset/cosmos/tree/main/packages/coords))
-- **Root-cause taxonomy ending a flaky-test era:** months of intermittent e2e failures,
-  classified across 16 commits: 3:1 test-environment coupling vs. real bugs. The fix
-  wasn't patching specs — it was replacing the tests' parallel camera model with query
-  hooks into the running app (`__cosmos.pickAt`, `projectToScreen`). The class died.
+- **Root-cause taxonomy killing the largest flake source:** a taxonomy of ~16
+  e2e-touching commits found roughly 3 environment-fighting fixes per real bug caught.
+  The fix wasn't patching specs — it was replacing the tests' parallel camera model with
+  query hooks into the running app (`__cosmos.pickAt`, `projectToScreen`). That class
+  died; others survived it and were fixed separately, and the era was ~3 weeks, not
+  months. (An earlier version of this bullet said "months" and "the class died" — both
+  were wrong, and checkable from `git log` in two minutes.)
 - **Specs drift; Step 0 catches it:** a six-spec backlog written from code reading was
   fact-checked one day later — three drift bugs found (a file cited in the wrong
   package, a signed/unsigned format error, a wiring plan that would have been dead
@@ -128,7 +147,9 @@ where it runs for real. A few receipts:
 /plugin marketplace add MattRosset/executable-specs
 /plugin install executable-specs
 
-# or manually: copy skills/* into ~/.claude/skills/
+# or manually: clone the repo, then copy skills/* into ~/.claude/skills/
+# (clone, don't cherry-pick the folder — the skills reference SPEC-TEMPLATE.md
+#  and the doctrine files, which live outside skills/)
 ```
 
 **Adopt the method (any tooling):**
@@ -154,13 +175,13 @@ agent wrote it" will never be an acceptable root cause.
 Calibration matters more than persuasion here, so: this is **a working method, not a
 validated one.**
 
-- **One codebase.** Everything was extracted from a single project — [cosmos](https://github.com/MattRosset/cosmos),
-  a graphics-heavy TypeScript monorepo I own solo. It has never been run against a
-  multi-team codebase, a legacy system, or a language where the tooling assumptions
-  don't hold.
-- **Small n.** The experiment in [`EVALS.md`](EVALS.md) is one task across three arms.
-  That is enough to show the spec format changes what ships; it is not enough to
-  quantify by how much, or to claim it generalizes.
+- **Two codebases, both mine.** Most of this was extracted from [cosmos](https://github.com/MattRosset/cosmos),
+  a graphics-heavy TypeScript monorepo I own solo, and replicated once in a private CRUD
+  app. It has never been run against a multi-team codebase, a legacy system, or a
+  language where the tooling assumptions don't hold.
+- **Small n.** [`EVALS.md`](EVALS.md) has four experiments; the flagship is one task
+  across three arms. That is enough to show the spec format changes what ships; it is not
+  enough to quantify by how much, or to claim it generalizes.
 - **Not solo-friendly by accident.** A single owner is why the doctrine can be this
   strict. On a team, the frozen-interface and scope rules need negotiation this repo
   doesn't model.
