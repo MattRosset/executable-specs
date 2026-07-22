@@ -51,6 +51,7 @@ it verifies **premises**, the one error class nothing downstream can catch.
 | Artifact | What it is |
 |----------|------------|
 | [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md) | The executable-spec format: Goal, Frozen Interface, Out of scope, Failure modes, deterministic Acceptance gate |
+| [`doctrine/BUILD-FOR-AGENTS.md`](doctrine/BUILD-FOR-AGENTS.md) | **How to build a repo an agent does the right thing in by default**: doctrine in the repo, reasons at the point of violation, machine-enforced boundaries, read seams, written-down failure history — and the honest boundary where the environment stops helping |
 | [`doctrine/TESTING.md`](doctrine/TESTING.md) | Test philosophy: gates, anti-tests, test power, self-measuring probes, "fix the test, never the threshold" |
 | [`skills/research`](skills/research/SKILL.md) | Claude Code skill: investigate before deciding what to build — mint re-checkable claims, or kill/reframe the work they were about to justify |
 | [`skills/spec-task`](skills/spec-task/SKILL.md) | Claude Code skill: write a spec a weaker agent can execute without judgment calls |
@@ -63,6 +64,22 @@ it verifies **premises**, the one error class nothing downstream can catch.
 | [`examples/`](examples/) | **Real specs from a real repo** — including a case study of fact-checking a spec set against a moving codebase |
 | [`EVALS.md`](EVALS.md) | **The method tested against a control** — spec vs. bare prompt, same model and task, predictions pre-registered, contaminated run reported rather than dropped |
 | [`PROPAGATION.md`](PROPAGATION.md) | Which artifacts are originals here and which are derived snapshots, and how changes flow between them |
+
+## Why specs and not prompts
+
+## Why the repo matters more than the prompt
+
+The experiments turned up something that reframes the whole method: in a well-built repo,
+an agent handed a *casual* prompt performed nearly as well as one handed a full spec —
+**because the repo taught it.** Frozen boundaries, a gate it can run, dense correct
+precedent, and doctrine written where it reads did the work the spec was supposed to do.
+
+So the leverage isn't the instruction you write per task; it's the world the agent wakes
+up in. A spec is a one-shot message. The repo is a standing teacher, present at every
+keystroke. [`doctrine/BUILD-FOR-AGENTS.md`](doctrine/BUILD-FOR-AGENTS.md) is how to build
+that world — including §9, the honest boundary: a good repo makes cheap the judgment
+**already made and left behind** as precedent. It does nothing for a decision the repo
+has never faced. Those still need a human.
 
 ## Why specs and not prompts
 
