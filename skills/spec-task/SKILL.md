@@ -41,11 +41,11 @@ Do these yourself — they are the expensive part; the spec is just their record
 
 ## Spec template
 
-Use `SPEC-TEMPLATE.md`. If installed as a plugin it sits at
-`${CLAUDE_PLUGIN_ROOT}/SPEC-TEMPLATE.md`; otherwise fetch it from
-[the repo](https://github.com/MattRosset/executable-specs/blob/main/SPEC-TEMPLATE.md).
-**If you can't reach it, don't invent a format** — the section order below is the
-contract and is enough to write a valid spec:
+Use `SPEC-TEMPLATE.md`, which ships **beside this file** — read it from this skill's own
+directory. (Fallbacks, in order: `${CLAUDE_PLUGIN_ROOT}/SPEC-TEMPLATE.md`, then
+[the repo copy](https://github.com/MattRosset/executable-specs/blob/main/SPEC-TEMPLATE.md).)
+**If you somehow can't reach any of them, don't invent a format** — the section order
+below is the contract and is enough to write a valid spec:
 
 Goal → Step 0 (facts to re-verify) → Context files → Frozen → Out of scope →
 Deliverables/Steps → Failure modes → Acceptance gate → Verification beyond the gate.
