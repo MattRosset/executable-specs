@@ -126,10 +126,13 @@ where it runs for real. A few receipts:
   scenario — proper f64-subtract-then-round vs. naive f32 absolute positions — with
   a `< 0.5 px over 300 frames` threshold the naive path must violate.
   ([`packages/coords/test/jitter.test.ts`](https://github.com/MattRosset/cosmos/tree/main/packages/coords))
-- **Root-cause taxonomy ending a flaky-test era:** months of intermittent e2e failures,
-  classified across 16 commits: 3:1 test-environment coupling vs. real bugs. The fix
-  wasn't patching specs — it was replacing the tests' parallel camera model with query
-  hooks into the running app (`__cosmos.pickAt`, `projectToScreen`). The class died.
+- **Root-cause taxonomy killing the largest flake source:** a taxonomy of ~16
+  e2e-touching commits found roughly 3 environment-fighting fixes per real bug caught.
+  The fix wasn't patching specs — it was replacing the tests' parallel camera model with
+  query hooks into the running app (`__cosmos.pickAt`, `projectToScreen`). That class
+  died; others survived it and were fixed separately, and the era was ~3 weeks, not
+  months. (An earlier version of this bullet said "months" and "the class died" — both
+  were wrong, and checkable from `git log` in two minutes.)
 - **Specs drift; Step 0 catches it:** a six-spec backlog written from code reading was
   fact-checked one day later — three drift bugs found (a file cited in the wrong
   package, a signed/unsigned format error, a wiring plan that would have been dead
@@ -172,13 +175,13 @@ agent wrote it" will never be an acceptable root cause.
 Calibration matters more than persuasion here, so: this is **a working method, not a
 validated one.**
 
-- **One codebase.** Everything was extracted from a single project — [cosmos](https://github.com/MattRosset/cosmos),
-  a graphics-heavy TypeScript monorepo I own solo. It has never been run against a
-  multi-team codebase, a legacy system, or a language where the tooling assumptions
-  don't hold.
-- **Small n.** The experiment in [`EVALS.md`](EVALS.md) is one task across three arms.
-  That is enough to show the spec format changes what ships; it is not enough to
-  quantify by how much, or to claim it generalizes.
+- **Two codebases, both mine.** Most of this was extracted from [cosmos](https://github.com/MattRosset/cosmos),
+  a graphics-heavy TypeScript monorepo I own solo, and replicated once in a private CRUD
+  app. It has never been run against a multi-team codebase, a legacy system, or a
+  language where the tooling assumptions don't hold.
+- **Small n.** [`EVALS.md`](EVALS.md) has four experiments; the flagship is one task
+  across three arms. That is enough to show the spec format changes what ships; it is not
+  enough to quantify by how much, or to claim it generalizes.
 - **Not solo-friendly by accident.** A single owner is why the doctrine can be this
   strict. On a team, the frozen-interface and scope rules need negotiation this repo
   doesn't model.
