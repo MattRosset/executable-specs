@@ -8,7 +8,16 @@ that actually catch bugs — especially in AI-assisted or parallel development, 
 the implementer optimizes for green.
 
 Case study throughout: [cosmos](https://github.com/MattRosset/cosmos), where this
-doctrine gates a 5M-star WebGL renderer in CI.
+doctrine gates a WebGL star renderer in CI — a ~109k-star catalog plus a 1M-point
+procedural galaxy. (The 5M Gaia pack is built out-of-band and gitignored, so CI never
+sees it; saying "gates 5M stars in CI" would be false, and checkable in one `git
+check-ignore`.)
+
+**Evidence base:** one WebGL project I own solo, plus one CRUD replication
+([EVALS Experiment 3](../EVALS.md)). The rules below are stated as imperatives because
+that is how a doctrine is usable — but they are **strong defaults from a narrow base**,
+not laws. The devices travel (anti-tests, deterministic gates, conservation invariants);
+the specific thresholds and the graphics examples do not.
 
 ---
 
@@ -53,7 +62,7 @@ If you only have (1), you might have false confidence.
 | Threshold relaxed to green | Gate becomes decoration |
 | Scenario "simplified" to pass | You stopped measuring the real risk |
 | Gate exercises a **different code path** than production | Green while the real path is broken (cosmos: jitter probe ran the f64 CPU subtract; the bug lived in the shader's f32 sum) |
-| Metric has a **floor/ceiling** that hides the cost | A vsync-paced FPS read identical numbers for a 12× GPU-cost difference; measure what the instrument reads on a known-idle vs known-heavy case first |
+| Metric has a **floor/ceiling** that hides the cost | A vsync-paced frame-interval metric read an identical 6.1 ms p50 across segments whose true GPU cost differed 7-19× by timer query; measure what the instrument reads on a known-idle vs known-heavy case first |
 | Speed metric with **no work metric beside it** | An empty scene / dead pipeline benchmarks as "fast" trivially; log drawn points / bytes served next to the timing |
 
 ---
@@ -107,7 +116,7 @@ naive   → obvious broken alternative    → must FAIL gate
 **conservation-invariant**: nothing dropped, nothing duplicated, order-independent
 (total out == total in, each element lands exactly once). Prove the failure with a
 measured before/after table, then gate the invariant itself.
-**Cosmos reference:** BUG-8 combine push-down (dropped the shallower catalog on approach).
+**Cosmos reference:** [BUG-8 combine push-down](https://github.com/MattRosset/cosmos/blob/main/docs/research/bug-8-combine-drops-source.md) (dropped the shallower catalog on approach).
 
 **Real example:** [cosmos `jitter.test.ts`](https://github.com/MattRosset/cosmos/blob/main/packages/coords/test/jitter.test.ts)
 - `proper`: f64 subtract, then `Math.fround`
@@ -161,9 +170,12 @@ Probe checklist:
 production math (projection, picking, layout) drifts and leaks environment details
 (OS font builds, GPU rasterization) into the assertion. Expose a read hook on the app
 and *ask* it. In cosmos, replacing the tests' parallel camera model with query hooks
-(`__cosmos.pickAt`, `__cosmos.projectToScreen`) ended a months-long flaky-e2e era —
-the [taxonomy that proved it](https://github.com/MattRosset/cosmos/blob/main/docs/research/e2e-ci-flakiness-rootcause-and-query-hook.md)
-classified 16 failures at 3:1 environment-coupling over real bugs.
+(`__cosmos.pickAt`, `__cosmos.projectToScreen`) removed the largest single source of
+CI-only e2e failures — the [taxonomy that proved it](https://github.com/MattRosset/cosmos/blob/main/docs/research/e2e-ci-flakiness-rootcause-and-query-hook.md)
+covered ~16 e2e-touching commits and found roughly 3 environment-fighting fixes per real
+bug caught. Other flake classes survived it and were fixed separately; the era was ~3
+weeks, not months. Precision here is the point: a doctrine that inflates its own case
+study is running the failure mode it warns about.
 
 ---
 
@@ -189,7 +201,9 @@ DOM (`document.elementFromPoint`) instead of hard-coded boxes.
 must be independent (unit test with known cases) — asking the app would be circular.
 
 **Cosmos:** `pickAt` / `projectToScreen` on `window.__cosmos` replaced a ~150-line
-parallel camera model that was the source of nearly all CI-only flake.
+parallel camera model — the single largest flake source, though only 2 of ~13
+environment-divergence commits: the rest were fonts, worker starvation, screenshots and
+perf assertions.
 
 ---
 
