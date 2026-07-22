@@ -65,14 +65,13 @@ it verifies **premises**, the one error class nothing downstream can catch.
 | [`EVALS.md`](EVALS.md) | **The method tested against a control** — spec vs. bare prompt, same model and task, predictions pre-registered, contaminated run reported rather than dropped |
 | [`PROPAGATION.md`](PROPAGATION.md) | Which artifacts are originals here and which are derived snapshots, and how changes flow between them |
 
-## Why specs and not prompts
-
 ## Why the repo matters more than the prompt
 
-The experiments turned up something that reframes the whole method: in a well-built repo,
-an agent handed a *casual* prompt performed nearly as well as one handed a full spec —
-**because the repo taught it.** Frozen boundaries, a gate it can run, dense correct
-precedent, and doctrine written where it reads did the work the spec was supposed to do.
+The experiments turned up something that reframes the whole method: in a controlled pair
+in cosmos — replicated in a second repo — an agent handed a *casual* prompt performed
+nearly as well as one handed a full spec, **because the repo taught it.** Frozen
+boundaries, a gate it can run, dense correct precedent, and doctrine written where it
+reads did the work the spec was supposed to do.
 
 So the leverage isn't the instruction you write per task; it's the world the agent wakes
 up in. A spec is a one-shot message. The repo is a standing teacher, present at every
