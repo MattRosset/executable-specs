@@ -41,9 +41,14 @@ Do these yourself — they are the expensive part; the spec is just their record
 
 ## Spec template
 
-Use `SPEC-TEMPLATE.md` from this repo. Section order: Goal → Step 0 (facts to
-re-verify) → Context files → Frozen → Out of scope → Deliverables/Steps → Failure
-modes → Acceptance gate → Verification beyond the gate.
+Use `SPEC-TEMPLATE.md`. If installed as a plugin it sits at
+`${CLAUDE_PLUGIN_ROOT}/SPEC-TEMPLATE.md`; otherwise fetch it from
+[the repo](https://github.com/MattRosset/executable-specs/blob/main/SPEC-TEMPLATE.md).
+**If you can't reach it, don't invent a format** — the section order below is the
+contract and is enough to write a valid spec:
+
+Goal → Step 0 (facts to re-verify) → Context files → Frozen → Out of scope →
+Deliverables/Steps → Failure modes → Acceptance gate → Verification beyond the gate.
 
 ## Rules
 
@@ -57,15 +62,23 @@ modes → Acceptance gate → Verification beyond the gate.
 - **Size the spec to the executor.** The weaker the implementer, the more the
   failure-modes and out-of-scope sections carry. For yourself, they can be terse;
   for a cheap agent, they are the spec.
+- **Every spec must ask the executor to log judgment calls.** Put this in the spec,
+  verbatim: *"Log every judgment call — anything this task didn't decide and you had
+  to — to `NOTES.md` beside the diff, visibly, as you go (not reconstructed after)."*
+  Without this line there is no NOTES.md, and the triage section at the bottom of this
+  skill has no input. It is the single cheapest thing a spec buys you.
 - **Every spec carries the standing rule** (verbatim, in or near Out of scope):
-  *"Findings during this task go to `docs/research/`; scope creep goes to a new task
+  *"Findings during this task go to `docs/research/` (or wherever this repo keeps
+  investigation writeups — create it if there is none); scope creep goes to a new task
   file, not into this diff."* Failure modes an implementer discovers are the project's
   most valuable output after the diff itself — and the only channel through which
   repo-historical judgment reaches future spec writers (see EVALS.md experiment 2:
   it's the one thing no in-context method reproduced).
 - **Mine failure modes; don't invent them.** Before writing that section, search
-  `docs/research/` and `git log -- <the paths this task touches>` for the area's
-  history. The traps that matter are the ones that already happened — and they
+  `docs/research/` — or the repo's equivalent — and `git log -- <the paths this task
+  touches>` for the area's history. If the repo keeps no written history, `git log` is
+  all you have: say so in the spec rather than leaving Failure modes thin, because an
+  empty section reads as "no traps here" and that is the lie this rule exists to stop. The traps that matter are the ones that already happened — and they
   transfer *only* through written research (EVALS experiment 2: no in-context method
   reproduced the one failure mode that lived in repo history alone).
 - If while writing you can't fill "Failure modes" — you don't understand the task

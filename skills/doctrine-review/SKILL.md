@@ -17,6 +17,11 @@ below is relative to that claim. If you can't state the claim, that's finding #1
 
 ## Checklist A — Tests (if the diff adds or modifies tests)
 
+> Checks 1-2 apply to tests that assert against rendered UI or spatial state. For a
+> backend service, CLI, or pure library they are not applicable — skip them and say you
+> skipped them, rather than inventing a "read hook" finding that makes no sense there.
+> Checks 3+ apply to every diff.
+
 1. **Queries real state, never re-derives it.** A test that reimplements production
    math (projection, layout, picking) will drift and fail on environment differences.
    The app must expose a read hook; the test asks, never recomputes.

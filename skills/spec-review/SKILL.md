@@ -23,8 +23,9 @@ section and the code evidence that contradicts or confirms it.
    repo's actual dependencies, not the ecosystem default. For binary formats, the
    authority is the writer code — cite the writer function.
 2. **Internal consistency.** Goal, function contracts, and acceptance gate must
-   point the same direction. A literal implementer stops at a contradiction (that's
-   the standing rule) — so a contradiction is a blocked task, found late.
+   point the same direction. A spec carrying a stop-at-contradictions clause turns a
+   contradiction into a *blocked task, found late*. If the repo has no such clause, the
+   contradiction instead gets improvised around silently — which is worse, and invisible.
 3. **Judgment quarantine.** Any design decision smuggled in as if mechanical
    (an architecture choice, a contract extension, a blend-mode/algorithm pick)?
    Quarantine it: defer to a design task or resolve it now with evidence — never
@@ -44,7 +45,7 @@ section and the code evidence that contradicts or confirms it.
    check; the gate names where testable code must live; anything that can fail in CI
    logs its chosen input and measured quantity.
 8. **Failure modes are mined, not invented.** Did the writer search `docs/research/`
-   and `git log -- <paths>` for this area's history? Repo-historical traps transfer
+   — or the repo's equivalent — and `git log -- <paths>` for this area's history? Repo-historical traps transfer
    only through written research (experiment 2: no in-context method reproduced the
    one failure mode that lived in repo history alone). If the mining wasn't done, do
    it now — it's the highest-value ten minutes of this review.
