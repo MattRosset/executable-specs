@@ -1,7 +1,7 @@
 # Testing Doctrine — Gates, Power, and Anti-Tests
 
-> Generado desde engineering-playbook/TESTING-DOCTRINE.md — no editar acá; editá el
-> original y re-exportá (ver [PROPAGATION.md](../PROPAGATION.md)).
+> Generated file — a genericized export of my private doctrine original. Don't edit it
+> here; edits belong upstream and get re-exported (see [PROPAGATION.md](../PROPAGATION.md)).
 
 This is not a testing framework guide. It is a **philosophy and contract** for tests
 that actually catch bugs — especially in AI-assisted or parallel development, where

@@ -61,6 +61,8 @@ it verifies **premises**, the one error class nothing downstream can catch.
 | [`templates/`](templates/) | Gate and test-spec worksheets (fatal risk, fixed scenario, PASS threshold, control that must fail) |
 | [`starters/CLAUDE-starter.md`](starters/CLAUDE-starter.md) | Day-one CLAUDE.md for a new repo — the standing rules (write-it-down, testing, tasks) that make every future agent session better. Skills fire on demand; this is in context always. |
 | [`examples/`](examples/) | **Real specs from a real repo** — including a case study of fact-checking a spec set against a moving codebase |
+| [`EVALS.md`](EVALS.md) | **The method tested against a control** — spec vs. bare prompt, same model and task, predictions pre-registered, contaminated run reported rather than dropped |
+| [`PROPAGATION.md`](PROPAGATION.md) | Which artifacts are originals here and which are derived snapshots, and how changes flow between them |
 
 ## Why specs and not prompts
 
@@ -89,6 +91,16 @@ fail on a loaded runner is a coin flip, and every retry you add hides the next r
 bug behind it.
 
 ## Evidence (the part most methodologies skip)
+
+**The method was tested against a control: [`EVALS.md`](EVALS.md).** The doctrine says a
+test without a control has no power, so the same standard applies to the method itself —
+if an agent handed a full spec ships no better than one handed a two-line prompt, the
+format is decoration. Two arms, same model, same repo, same real task, predictions
+written down before the results. All three arms passed the test suite; **every difference
+that mattered was invisible to it** — scope violations, frozen-interface breaks, silent
+judgment calls. One finding worth the click: an agent that *found* the spec in its
+worktree violated its frozen interface anyway. A spec you discover is advice; a spec
+handed to you as the contract is binding — so distribution is part of the method.
 
 Everything here was extracted from [cosmos](https://github.com/MattRosset/cosmos),
 where it runs for real. A few receipts:
@@ -136,6 +148,26 @@ where it runs for real. A few receipts:
 Engineers operating coding agents on codebases they're accountable for. It assumes
 you'd rather own five sharp judgment calls than fifty vague diffs — and that "the
 agent wrote it" will never be an acceptable root cause.
+
+## Scope and limits (read this before adopting it wholesale)
+
+Calibration matters more than persuasion here, so: this is **a working method, not a
+validated one.**
+
+- **One codebase.** Everything was extracted from a single project — [cosmos](https://github.com/MattRosset/cosmos),
+  a graphics-heavy TypeScript monorepo I own solo. It has never been run against a
+  multi-team codebase, a legacy system, or a language where the tooling assumptions
+  don't hold.
+- **Small n.** The experiment in [`EVALS.md`](EVALS.md) is one task across three arms.
+  That is enough to show the spec format changes what ships; it is not enough to
+  quantify by how much, or to claim it generalizes.
+- **Not solo-friendly by accident.** A single owner is why the doctrine can be this
+  strict. On a team, the frozen-interface and scope rules need negotiation this repo
+  doesn't model.
+
+What I'd claim: the *devices* travel — anti-tests, deterministic gates, premise
+research, judgment quarantine. What I wouldn't: that adopting the whole thing
+unmodified will work in a context that looks nothing like mine.
 
 ---
 
