@@ -61,6 +61,7 @@ it verifies **premises**, the one error class nothing downstream can catch.
 | [`skills/distill-learning`](skills/distill-learning/SKILL.md) | Claude Code skill: extract portable patterns from a finished phase back into your doctrine |
 | [`templates/`](templates/) | Gate and test-spec worksheets (fatal risk, fixed scenario, PASS threshold, control that must fail) |
 | [`starters/CLAUDE-starter.md`](starters/CLAUDE-starter.md) | Day-one CLAUDE.md for a new repo — the standing rules (write-it-down, testing, tasks) that make every future agent session better. Skills fire on demand; this is in context always. |
+| [`starters/global-standing-rules.md`](starters/global-standing-rules.md) | **User-level** standing rules (stop-at-contradictions, current-state-is-truth, objective-over-proxy, truth-over-approval, red-flags) for your `~/.claude/CLAUDE.md` — the five universal rules that load on every repo. `@import` it once per machine to keep them in sync (see Quickstart). |
 | [`examples/`](examples/) | **Real specs from a real repo** — including a case study of fact-checking a spec set against a moving codebase |
 | [`EVALS.md`](EVALS.md) | **The method tested against a control** — spec vs. bare prompt, same model and task, predictions pre-registered, contaminated run reported rather than dropped |
 | [`PROPAGATION.md`](PROPAGATION.md) | Which artifacts are originals here and which are derived snapshots, and how changes flow between them |
@@ -151,6 +152,21 @@ where it runs for real. A few receipts:
 # (clone, don't cherry-pick the folder — the skills reference SPEC-TEMPLATE.md
 #  and the doctrine files, which live outside skills/)
 ```
+
+**Install the global standing rules (once per machine):** the plugin ships skills, which
+fire on demand. The five user-level rules in
+[`starters/global-standing-rules.md`](starters/global-standing-rules.md) are the *push*
+layer — they load into every session — and a plugin cannot write your `~/.claude/CLAUDE.md`.
+So add them yourself, once, via a single `@import` line (Claude Code resolves it every
+session; a `git pull` on this repo then updates the rules on every machine):
+
+```markdown
+<!-- in ~/.claude/CLAUDE.md -->
+@/absolute/path/to/executable-specs/starters/global-standing-rules.md
+```
+
+Or copy the file's contents straight into `~/.claude/CLAUDE.md` if you'd rather not depend
+on the clone path.
 
 **Adopt the method (any tooling):**
 
