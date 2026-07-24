@@ -161,14 +161,31 @@ VERIFIED: 2026-07-24
 RECHECK:  grep -c '"C:\\\\' ~/.claude.json
 ```
 
-## Beliefs (segunda clase — NO citar como Step-0 en un spec)
+## Belief RESUELTO → claim (via claude-code-guide sobre docs oficiales, 2026-07-24)
 
-- **Un plugin de Claude Code entrega skills/commands/agents/hooks/MCP, pero no el
-  `~/.claude/CLAUDE.md` global ni la memoria.** Consistente con plugin.json y con que
-  PROPAGATION.md trata las standing rules como original aparte, pero no lo verifiqué
-  contra la documentación oficial de plugins. RECHECK: claude-code-guide / docs de
-  plugins. Si resultara falso (existe un canal nativo para el memory global), la Capa 2
-  cambiaría de "gap" a "adoptar mecanismo nativo".
+```
+CLAIM:    Un plugin de Claude Code NO puede escribir/mergear el ~/.claude/CLAUDE.md
+          global — un CLAUDE.md en la raíz del plugin no se carga. Los plugins aportan
+          skills/agents/hooks/MCP (+ settings solo con keys agent/subagentStatusLine).
+          NO existe sync nativo del CLAUDE.md/memoria global entre máquinas (la memoria
+          es machine-local por diseño). PERO CLAUDE.md soporta `@path` import (rutas
+          relativas y absolutas), así que un archivo de reglas versionado en el repo se
+          carga con una sola línea @import por máquina.
+EVIDENCE: claude-code-guide citando code.claude.com/docs/en/plugins-reference.md
+          ("A CLAUDE.md file at the plugin root is not loaded as project context…
+          put them in a skill"), memory.md ("Files are not shared across machines"),
+          y memory.md (sintaxis @path de import en CLAUDE.md).
+VERIFIED: 2026-07-24 (reportado de docs; recheck trivial abajo)
+RECHECK:  poner una línea `@~/.claude/standing-rules.md` en un CLAUDE.md y confirmar
+          que el contenido importado carga en contexto; + revisar
+          code.claude.com/docs/en/plugins-reference.md y /memory.md
+```
+
+**Decisión de diseño de la Capa 2 (desbloqueada por el claim):** las 5 reglas globales
+NO van dentro del plugin como CLAUDE.md (no cargaría). Van como archivo versionado en el
+repo (`starters/global-standing-rules.md`) + **una línea `@import`** que el usuario
+agrega una vez por máquina a su `~/.claude/CLAUDE.md`. Fuente única versionada; `git pull`
+propaga cambios. Supera a la copia manual (que se desincroniza).
 - **`/plugin marketplace add MattRosset/executable-specs` funciona desde la Mac.**
   El repo está pusheado y el remote resuelve, pero la instalación por marketplace
   típicamente requiere repo **público**; no confirmé visibilidad pública vía API.
