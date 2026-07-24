@@ -1,6 +1,11 @@
 # Research — Portabilidad e instalación de la doctrina de Claude (máquina → máquina, y como artefacto de `executable-specs`)
 
 Status: **DONE** — verdict: reframe. Steps 1–2 were committed before opening any source file.
+**Follow-up shipped 2026-07-24:** the Capa 2 artifact now exists — `starters/global-standing-rules.md`
+(genericized public snapshot of the 5 rules), documented in the README with the `@import`
+install, and registered in `PROPAGATION.md`. Remaining: the rule-4/5 rationale wording is
+gated on `agent-integrity-lab` TASK-B2 (handoff-cost WHY); memory + `.claude.json` stay out
+of scope.
 Started: 2026-07-24
 
 ## Contexto / disparador
