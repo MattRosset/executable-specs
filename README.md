@@ -141,20 +141,32 @@ where it runs for real. A few receipts:
 
 ## Quickstart
 
-**Use the skills (Claude Code):**
+**Use the skills** (Cursor, Claude Code, Codex, and others):
 
 ```bash
-# as a plugin
-/plugin marketplace add MattRosset/executable-specs
-/plugin install executable-specs
-
-# or manually: clone the repo, then copy skills/* into ~/.claude/skills/
-# (clone, don't cherry-pick the folder — the skills reference SPEC-TEMPLATE.md
-#  and the doctrine files, which live outside skills/)
+npx skills add MattRosset/executable-specs
 ```
 
-**Install the global standing rules (once per machine):** the plugin ships skills, which
-fire on demand. The five user-level rules in
+That installs all six skills. The CLI will ask which agents to target and whether
+to install for this project or globally (`-g` if you already know). Pass `-a cursor`
+or `-a claude-code` to skip the agent prompt. To install one skill only:
+`--skill spec-task` (or `research`, `spec-review`, `doctrine-review`, `root-cause`,
+`distill-learning`). Update later with `npx skills update`.
+
+**Claude Code plugin** (alternative — same skills, Claude only):
+
+```bash
+/plugin marketplace add MattRosset/executable-specs
+/plugin install executable-specs
+```
+
+Or clone the repo and copy `skills/*` into `~/.cursor/skills/` / `~/.claude/skills/`.
+Don't cherry-pick the folder: the skills reference [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md)
+and the doctrine files, which live outside `skills/` (each skill also links the
+GitHub copy).
+
+**Install the global standing rules (once per machine):** skills fire on demand. The five
+user-level rules in
 [`starters/global-standing-rules.md`](starters/global-standing-rules.md) are the *push*
 layer — they load into every session — and a plugin cannot write your `~/.claude/CLAUDE.md`.
 So add them yourself, once, via a single `@import` line (Claude Code resolves it every
