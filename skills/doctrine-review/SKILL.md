@@ -51,6 +51,11 @@ below is relative to that claim. If you can't state the claim, that's finding #1
    *live* threshold to absorb a regression. Check the task spec before flagging.
 8. **New behavior that matters has a gate.** If the diff's claim is "X now works,"
    ask: which deterministic check fails if X regresses next month?
+8b. **New code lands inside the existing gates.** For each file or route the diff
+   adds, ask: does every relevant audit, lint rule, and budget already cover it? A
+   gate scoped only by a hand-written list (covered modules or routes) silently
+   excludes the new one. Flag it, and ask for a computed scope (a glob or scan that
+   cross-checks the list, with reasoned exceptions), not one more entry in the list.
 
 ## Checklist C — Scope and freeze
 
