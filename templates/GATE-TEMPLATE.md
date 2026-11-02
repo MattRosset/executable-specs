@@ -38,6 +38,19 @@ One sentence. Be specific.
 
 ---
 
+## Scope (who the gate covers)
+
+**Computed by:** [glob or scan that finds everything at risk, e.g. `lib/**` modules that write a tenant table]
+
+**Exceptions:** [empty, or one line per entry with its reason]
+
+> Not only a hand-written list of what is covered: if a registry is needed (per-item
+> numbers), a computed scan must cross-check it. Code written after this gate must land
+> inside it without anyone editing the gate. Check: a new file that violates the rule,
+> in a new directory, turns CI red.
+
+---
+
 ## CONTROL — anti-test (must FAIL)
 
 **Bug class:** [one sentence]
