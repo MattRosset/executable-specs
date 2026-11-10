@@ -38,6 +38,12 @@ Do these yourself — they are the expensive part; the spec is just their record
    with equal fidelity — a prescribed new primitive where the repo already had the
    pattern produced a worse diff than no spec at all (EVALS experiment 3). An unaided
    agent reads the repo; a specced agent obeys you. Earn the obedience.
+6. **Write the delta, not the whole picture.** Ask what the repo already teaches about
+   this task — lint rules, gates, comments at the site, precedent. Point at those in
+   Context instead of restating them, and spend the spec on what the repo cannot carry:
+   novel decisions, frozen surface no lint covers, traps that live only in history, and
+   wiring where the wrong placement compiles and passes. Restating what the repo enforces
+   adds length and a second place for your errors to travel (rule 5).
 
 ## Spec template
 
@@ -47,10 +53,23 @@ Use `SPEC-TEMPLATE.md`, at the root of this plugin —
 **If you can't reach it, don't invent a format** — the section order below is the
 contract and is enough to write a valid spec:
 
-Goal → Step 0 (facts to re-verify) → Context files → Frozen → Out of scope →
-Deliverables/Steps → Failure modes → Acceptance gate → Verification beyond the gate.
+Header (Status, Size, Depends on, Verified against code, Provenance) → Goal → Step 0
+(facts to re-verify) → Context files → Allowed paths → Frozen → Out of scope →
+Deliverables/Steps → Failure modes → Acceptance gate → Verification beyond the gate →
+Habitat delta.
 
 ## Rules
+
+- **Scope is a list of paths, and it is checked.** Allowed paths are globs; the acceptance
+  gate includes `git diff --name-only <base>...HEAD` matching only those globs. "Out of
+  scope" prose explains intent; the path list is what a reviewer can verify in ten
+  seconds. A needed file outside the list is a STOP, never a judgment call.
+- **Every spec has a Habitat delta.** For each trap, frozen item, and pre-resolved
+  decision, name where it lives in the repo after the task, on the highest rung available:
+  lint/CI check → gate with a failing control → comment at the edit site → entry-file rule
+  → research doc/ADR. The spec is the lowest rung there is: one reader, one time. A trap
+  you are writing into a second spec is habitat debt — schedule its move up the ladder.
+  *(Provisional: proposed 2026-11-09, not yet measured. Promote or drop on evidence.)*
 
 - **Acceptance gates must be deterministic proxies.** Screenshots and wall-clock
   performance are reference-machine information, never blocking checks (they turn the
@@ -102,3 +121,15 @@ Handing off is half the contract; the other half fires when the diff lands. Tria
 
 An untriaged NOTES.md entry is a lesson paid for and thrown away. Ten minutes per
 task; this is the flywheel, not the experiments.
+
+Then **harvest** — confirm the spec paid the repo, not only the diff:
+
+- Every Habitat delta row exists where it said it would (open the file; don't trust the
+  PR description). Rows deferred to a follow-up task have that task file.
+- Each NOTES.md entry triaged as a spec bug gets the same question the spec's own traps
+  got: what in the *repo* would have made this entry unnecessary? If the answer is a
+  comment, a rule, or a check, that is a habitat delta too — add it or task it.
+- Set the spec's **Status** to `done` and record the merge commit in Provenance.
+
+The test of a harvested task: the next spec in this area is shorter, because it can point
+at the repo instead of repeating this one.

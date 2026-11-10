@@ -17,12 +17,19 @@ below is relative to that claim. If you can't state the claim, that's finding #1
 
 ## Checklist A — Tests (if the diff adds or modifies tests)
 
-> Checks 1-2 apply to tests that assert against rendered UI or spatial state. For a
+> Checks 1b and 2 apply to tests that assert against rendered UI or spatial state. For a
 > backend service, CLI, or pure library they are not applicable — skip them and say you
 > skipped them, rather than inventing a "read hook" finding that makes no sense there.
-> Checks 3+ apply to every diff.
+> Check 1 and checks 3+ apply to every diff, in every domain.
 
-1. **Queries real state, never re-derives it.** A test that reimplements production
+1. **The test calls the production code, never a copy of it.** Search the test for the
+   production formula or logic written out again ("mirrors X", a re-typed expression, a
+   helper that duplicates the function under test). If the real code is inline and
+   unreachable from a test, the finding is "extract it and test the extraction" — a test
+   of a mirror leaves the real formula ungated, and breaking it keeps the suite green.
+   This is domain-independent: it is how the control arm failed in EVALS experiment 1,
+   on a one-line pure formula.
+1b. **Queries real state, never re-derives it.** A test that reimplements production
    math (projection, layout, picking) will drift and fail on environment differences.
    The app must expose a read hook; the test asks, never recomputes.
 2. **No pixel/font/HUD geometry assumptions.** OS font builds differ between dev and
@@ -31,7 +38,10 @@ below is relative to that claim. If you can't state the claim, that's finding #1
 3. **Test power: would a broken implementation fail this?** For critical logic,
    demand the anti-test — a deliberately naive path that must fail the same check.
    `toBeDefined()`, "doesn't throw", happy-path-only, and mocking the code under
-   test are all findings.
+   test are all findings. For a bug fix, ask for the evidence that the new test was
+   **seen red** against the pre-fix code (the failing output, pasted) — "it would fail"
+   is a claim; the red run is the measurement. If it's missing and cheap, run it
+   yourself: revert the fix locally, run the test, report what happened.
 4. **Blocking checks are deterministic.** Screenshots and wall-clock perf must be
    reference-only (skipped in CI or informational). A gate that can fail on a slow
    runner is a coin flip, not a gate.
@@ -49,6 +59,13 @@ below is relative to that claim. If you can't state the claim, that's finding #1
    wiring a dormant gate to its measured value, with the measurement recorded in a
    comment and a ratchet-up-only rule) is not a weakening — the sin is lowering a
    *live* threshold to absorb a regression. Check the task spec before flagging.
+7b. **No check silenced to make the diff green.** Search the diff's added and removed
+   lines for: skipped or deleted tests (`.skip`, `.only`, `todo`, a removed `it(`),
+   removed or loosened assertions, type-error suppressions (`@ts-ignore`,
+   `@ts-expect-error`, `as any`, or the language's equivalent), lint disables, and empty
+   `catch` blocks. Each hit needs a reason stated in the task or NOTES.md; without one
+   it is a blocking finding. If the repo could lint this and doesn't, say so — a rule
+   that only a reviewer enforces gets enforced only when someone reviews.
 8. **New behavior that matters has a gate.** If the diff's claim is "X now works,"
    ask: which deterministic check fails if X regresses next month?
 8b. **New code lands inside the existing gates.** For each file or route the diff
@@ -61,9 +78,16 @@ below is relative to that claim. If you can't state the claim, that's finding #1
 
 9. **The diff does only what its task/claim says.** Flag drive-by refactors,
    "improved" abstractions in mechanical tasks, and any touched file the claim
-   doesn't explain.
+   doesn't explain. If the task has a spec with **Allowed paths**, don't judge this by
+   eye: run `git diff --name-only <base>...HEAD` and compare against the list. Any file
+   outside it is a blocking finding regardless of how sensible the change looks.
 10. **Frozen surface untouched.** Public APIs, gate definitions, and thresholds
     change only in explicit thaw tasks.
+10b. **The task closed its own paperwork.** If there is a spec: its Status is `done`,
+    the ledger/progress row is updated in this diff, NOTES.md exists (an empty one on a
+    non-trivial task means silent guessing, not zero judgment calls), and every
+    **Habitat delta** row exists at the file it named — open the file. Shipped work
+    that still reads as pending is drift no test catches (EVALS experiment 3).
 
 ## Checklist D — Correctness spot-checks
 

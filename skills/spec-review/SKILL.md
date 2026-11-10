@@ -36,7 +36,10 @@ section and the code evidence that contradicts or confirms it.
    writer may have answered from convention, not from this repo (experiment 3).
 5. **Frozen surface: present, specific, complete.** Ask: what would the executor
    most *naturally* touch that they must not? If the frozen list doesn't name it,
-   add it.
+   add it. **Allowed paths** get the same scrutiny from the other side: every file the
+   Deliverables name matches a glob (expand the globs and look — a glob that matches
+   nothing is a path typo); no glob is wider than the task needs (`src/**` on a
+   one-file task is not a scope); test files, NOTES.md, and the ledger row are covered.
 6. **Executor-decidability.** Count the open forks ("or", "pick one", "prefer",
    "if easy"). More than one bounded, rule-formed decision is a finding — each needs
    ordered options, checkable preconditions, and a STOP case, or it gets resolved
@@ -49,6 +52,19 @@ section and the code evidence that contradicts or confirms it.
    only through written research (experiment 2: no in-context method reproduced the
    one failure mode that lived in repo history alone). If the mining wasn't done, do
    it now — it's the highest-value ten minutes of this review.
+9. **The spec is a delta, and it pays the repo.** Two directions:
+   - *Restating:* does the spec re-explain something a lint rule, gate, or existing
+     precedent already settles? Replace the prose with a pointer. Restated rules are a
+     second copy that can disagree with the first.
+   - *Habitat delta:* every trap, frozen item, and pre-resolved decision has a row; the
+     rung is the highest one actually available (a trap parked in "research doc" when a
+     comment at the edit site would guard it is a finding); "nothing to leave" names
+     what already enforces it. Grep earlier specs for the same trap — a repeat is
+     habitat debt and must reach lint, a gate, or a site comment this time.
+   *(Provisional check: proposed 2026-11-09, not yet measured.)*
+10. **Header and standing lines.** Status, verified-against date and commit, and
+    Provenance are filled in; the NOTES.md line and the findings/scope-creep line are
+    present verbatim. Without the NOTES line the post-merge triage has no input.
 
 ## Output
 
