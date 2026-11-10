@@ -1,7 +1,7 @@
 # Examples — real specs from a real repo
 
 These are unedited task specs from [cosmos](https://github.com/MattRosset/cosmos)
-(a 5M-star WebGL galaxy renderer maintained through agent-executed specs), reproduced
+(a WebGL galaxy renderer — 5M stars in its full data pack — maintained through agent-executed specs), reproduced
 here so you can see the format carrying real weight — not toy examples written for a
 README.
 

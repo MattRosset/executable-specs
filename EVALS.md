@@ -466,6 +466,116 @@ quarantine), not premise detection — position it that way; (c) the coupling st
 (research doc → cheap spec-writer consumes claims as Step 0) is now the live
 question, since the artifact is exactly what survived. Not yet run.
 
+## Experiment 5 — habitat ablation with replicates (DRAFT — not yet pre-registered)
+
+**Status: draft, written 2026-11-09. Nothing has run.** This becomes a pre-registration
+only when every `<bracketed>` field is filled in, the predictions are replaced with the
+author's own, and the section is committed on its own before any arm starts. Until then
+it is a design proposal and may not be cited as a pre-registration.
+
+**Why this experiment.** Experiments 1–4 share four weaknesses, stated in their own
+limitations and here together:
+
+1. **One run per arm.** The agent-integrity runs cited in the build-for-agents doctrine
+   (§14) showed repeated cells spanning up to 25pp. A single-run difference between arms
+   is not readable, and every result above is one.
+2. **The auditor was the author, unblinded.** The person who designed the method scored
+   the arms knowing which was which.
+3. **Both repos carry the doctrine.** The control arm reached parity five times because
+   the repo taught it. The claim that follows — *the spec matters most where the repo
+   does not teach* — is the claim most adopters depend on, and it has never been tested.
+4. **Cost was never recorded.** The method adds spec writing, spec review, and triage.
+   No experiment measured what that costs against what it buys.
+
+**Question:** when the repo's teaching layer is removed, does the spec's edge over a thin
+prompt grow — and is any of it readable above run-to-run noise?
+
+**Design:** 2 × 2, same model, same task, same base commit, isolated worktrees.
+
+| | Spec handed as contract | Thin prompt (goal in three sentences) |
+|---|---|---|
+| **Full habitat** (repo as it is) | A | B |
+| **Ablated habitat** | C | D |
+
+- **Repo:** `<repo>` at commit `<sha>`. **Task:** `<task id>` — S/M, mechanical, with at
+  least one trap that compiles and passes (`<the trap>`), and a hardened spec that has
+  passed `spec-review`.
+- **Ablation (cells C and D), applied by script so it is identical every run:** delete the
+  entry files (`CLAUDE.md`, `AGENTS.md`), `docs/research/`, `docs/decisions/`, the testing
+  conventions doc, and `<other doctrine docs>`. **Not removed, and stated as a confound:**
+  code comments, existing tests, and lint rules stay, so this is a partial ablation — it
+  removes written doctrine, not precedent. Parity in the ablated cells therefore says
+  "precedent and lint are enough," not "habitat doesn't matter."
+- **Replicates:** 5 runs per cell, 20 runs total. Model: `<model>`, same for all cells.
+- **Operational rules, identical across cells and published verbatim in this section
+  before the run:** `<the exact executor prompt, minus the spec>`. Experiments 1–3 used
+  "identical operational rules" that were never published; this one is reproducible or it
+  does not run.
+- **Contamination check, by script before each run:** the spec file and every `TASK-*`
+  file for this task are absent from the thin-prompt worktrees (experiment 1's incident);
+  no memory index is injected, or its presence is logged per run (experiment 4's).
+
+**Rubric — binary, fixed before the run, computed by script wherever possible:**
+
+| # | Check | How it is computed |
+|---|-------|--------------------|
+| 1 | Local gate passes | `<verify command>` exit code, run by the harness, not reported by the agent |
+| 2 | Scope held | `git diff --name-only` ⊆ the spec's Allowed paths (the same list is applied to all four cells) |
+| 3 | Frozen surface untouched | `git diff --stat -- <frozen paths>` is empty |
+| 4 | The trap avoided | `<grep or test that detects the trap>` |
+| 5 | Tests call production code | the new test imports `<production symbol>`; blind grader confirms no re-typed formula |
+| 6 | Paperwork closed | ledger row updated; spec Status (cells A, C) |
+| 7 | Judgment calls logged | NOTES.md exists with ≥ 1 entry, or the diff contains no decision the task left open (blind grader) |
+| 8 | No check silenced | diff adds no `.skip`, type suppression, lint disable, or loosened assertion |
+
+Checks 5 and 7 need a reader. **Blind grading:** a separate model (`<grader model>`, not
+the executor and not the spec writer) receives each diff with the cell label, branch name,
+spec file, and task id stripped, and answers the rubric question with a file:line citation.
+Residual leak, stated: a spec-arm diff may reveal itself through comments that cite the
+task. The author spot-checks `<n>` gradings *after* the scores are frozen and reports
+disagreements; the author does not score.
+
+**Cost, recorded per run:** executor tokens and wall time. **Recorded once:** human and
+model time spent writing and reviewing the spec. Reported next to the results, not
+folded into them.
+
+**Reading rule (fixed now, because n = 5 is small):** for one check, two cells differ
+*readably* only at 5/5 vs ≤ 1/5, or 4/5 vs 0/5 (Fisher exact, two-sided p ≈ 0.048).
+Anything narrower is reported as "not readable at n = 5" — not as a trend, and not as
+parity either. No check is added, dropped, or redefined after the first run starts; a
+check that turns out to be broken is reported as broken and excluded for all cells.
+
+**Predictions (placeholders proposed by the model that drafted this section — the
+author replaces them with his own before committing):**
+
+1. Check 1 passes in ≥ 19 of 20 runs. Green does not discriminate, a fourth time.
+2. In the full habitat, A and B differ readably on at most one check (paperwork).
+3. In the ablated habitat, C beats D readably on at least two of checks 2–7.
+4. D is worse than B on at least two checks — the ablation itself has a readable effect.
+5. Within a cell, at least one check splits 2/5–3/5: run-to-run variance is large enough
+   that experiments 1–4 could not have seen what they reported as differences.
+
+**What would count against the method (written before running):**
+
+- **Prediction 3 fails** (C ≈ D): the spec adds nothing readable even without written
+  doctrine. Combined with experiments 1 and 3, the spec's measured edge on small
+  mechanical tasks is then nil in both conditions, and the README's "why specs and not
+  prompts" section must be rewritten to claim only what survived (judgment quarantine at
+  spec-*writing* time, experiment 2).
+- **Prediction 4 fails** (D ≈ B): written doctrine is not what teaches; precedent and
+  lint are. The build-for-agents doctrine's §2 ("doctrine lives in the repo") loses its
+  main support and §4/§6 gain it.
+- **Prediction 5 holds strongly** (most checks split within cells): the earlier
+  experiments' single-run tables are retained as records but may no longer be cited as
+  evidence of a difference between arms.
+
+**Out of scope here, queued as Experiment 6 (the harvest test):** whether the Habitat
+delta rule — provisional in `SPEC-TEMPLATE.md` and `skills/spec-task` since 2026-11-09 —
+does what it claims. Shape: run a specced task and merge its habitat delta; then hand a
+*sibling* task in the same area, by thin prompt, to agents in the repo with and without
+that delta. If the thin-prompt agent does no better with the delta present, the rule is
+paperwork and gets removed. Not designed yet; it depends on this experiment's harness.
+
 ## The self-improvement loop
 
 Every executor failure gets classified with the `root-cause` taxonomy: **spec bug**

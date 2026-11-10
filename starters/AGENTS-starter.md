@@ -1,7 +1,10 @@
-# CLAUDE.md starter — the standing rules that make agents compound
+# AGENTS.md starter — the standing rules that make agents compound
 
-Copy this into a new repo's `CLAUDE.md` (trim to taste) **on day one**. These rules are
-*push*-channel doctrine: skills only fire when invoked, but CLAUDE.md is in every
+Copy this into a new repo's entry file (trim to taste) **on day one**: `AGENTS.md` for
+Cursor, Codex, and most other agents; `CLAUDE.md` for Claude Code (or keep one
+`AGENTS.md` and make `CLAUDE.md` a single line: `@AGENTS.md`). Fill in the
+`<placeholders>`. These rules are
+*push*-channel doctrine: skills only fire when invoked, but the entry file is in every
 agent's context every session. This is how a repo starts teaching the agents that work
 on it — measured effect in [EVALS.md](../EVALS.md): unaided agents in a repo carrying
 these rules beat predictions on doctrine adherence in both experiments.
@@ -29,6 +32,32 @@ these rules beat predictions on doctrine adherence in both experiments.
    saying so and pointing at the research doc. This is what lets a future agent — or a
    prompt-only one — avoid breaking it without reading anything else.
 
+## How you know you're done
+
+- One command is the local gate: `<verify command>` (lint + typecheck + unit + build).
+  Run it before saying a task is done and report its actual result. Green is necessary,
+  never the goal.
+- If a tier of tests only runs in CI, it has a local command too: `<e2e command>`.
+  A check nobody can run locally produces "passes local, fails CI" by construction.
+- If the gate goes red and it isn't the code's fault, that is a bug in the gate — report
+  it; do not retry until green.
+
+## Boundaries
+
+- Architecture rules live in lint/CI, not in this file: see `<lint config>`. Each rule's
+  message says why and names the correct move — read it instead of working around it.
+- A new boundary becomes a lint rule or CI check, not a paragraph here. A documented
+  boundary is one an agent can cross in an afternoon across twelve files.
+- Never disable a rule inline to get to green. If a rule is wrong, say so and stop.
+
+## Precedent
+
+- Before introducing a pattern, component, or dependency, search for how this repo
+  already does it and reuse that. A second way of doing the same thing is a finding,
+  not a contribution.
+- The first example of anything new gets copied. If your change is that first example,
+  say so in the PR so it gets reviewed as a teaching artifact.
+
 ## Testing (the short form — see the testing doctrine for the full contract)
 
 - Tests query real state; never re-derive production math in a test.
@@ -42,8 +71,13 @@ these rules beat predictions on doctrine adherence in both experiments.
 ## Tasks
 
 - Work larger than a one-line fix gets a spec (`docs/agent-tasks/`, per the
-  spec template): frozen surface, out of scope, failure modes, deterministic
-  acceptance gate.
+  spec template): allowed paths, frozen surface, out of scope, failure modes,
+  deterministic acceptance gate, habitat delta.
+- A task changes only the files its spec's Allowed paths list. Needing another file is
+  a stop, not a judgment call.
+- A lesson goes to the highest rung that can hold it: lint/CI check, then a gate with a
+  failing control, then a comment at the edit site, then a rule in this file, then a
+  research doc. A trap written into a second spec belongs in the repo instead.
 - Frozen surface (public APIs, thresholds, gate definitions) changes only via an
   explicit thaw task — never as a side effect.
 - If reality contradicts the spec: stop and update the spec (or mark blocked); do not

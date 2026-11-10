@@ -7,7 +7,9 @@ skills — for running software projects where agents write most of the code and
 human owns the judgment. Extracted from a real project, not a thought experiment:
 [cosmos](https://github.com/MattRosset/cosmos), a 5-million-star WebGL galaxy renderer
 built and maintained almost entirely through agent-executed task specs, with
-deterministic gates in CI.
+deterministic gates in CI. (The CI gates run on the catalogs committed to the repo, not on
+the 5M pack, which is built out-of-band — [`doctrine/TESTING.md`](doctrine/TESTING.md)
+states the exact numbers.)
 
 ---
 
@@ -26,31 +28,35 @@ deterministic gates in CI.
 ## The loop
 
 ```
-        ┌────────────────────────────────────────────────────────────────────┐
-        │                                                                    │
-   research ──► spec-task ──► implement ──► doctrine-review ──► gates in CI │
-   (mint claims, (strong        (any           (checklist,        (determin- │
-    kill, or      model or       model)         human owns         istic     │
-    reframe)      human)                        the merge)         proxies)  │
-        ▲                                                             │      │
-        │                  root-cause ◄── failure ────────────────────┘      │
-        │                  (measure, don't guess)                            │
-        │                                                                    │
-        └────────────────── distill-learning ◄───────────────────────────────┘
-                            (portable patterns back into doctrine)
+research ──► spec-task ──► spec-review ──► implement ──► doctrine-review ──► gates in CI
+(mint claims, (write only    (fact-check      (any model)   (checklist; a       (deterministic
+ kill, or      what the repo  against the                    human owns the      proxies)
+ reframe)      doesn't say)   live code)                     merge)                  │
+   ▲                                                                                 │
+   │                       root-cause ◄─────────────── failure ──────────────────────┤
+   │                       (measure, don't guess)                                    │
+   │                                                                                 ▼
+   └──── distill-learning ◄──── harvest ◄─────────────── merged ─────────────────────┘
+         (portable patterns     (what the spec knew moves into the
+          into doctrine)         repo: lint, gates, comments, docs)
 ```
 
-Each arrow is a skill or template in this repo. The strong model (or you) spends its
+Each step is a skill or template in this repo. The strong model (or you) spends its
 time where judgment lives; cheaper models execute mechanically inside a contract.
 Every producer has a verifier — specs get spec-review, diffs get doctrine-review,
 behavior gets gates — and `research` extends that invariant to the top of the chain:
 it verifies **premises**, the one error class nothing downstream can catch.
 
+**Harvest** is the step that makes the loop compound, and it is the newest and least
+tested part (provisional since 2026-11-09 — see "Specs build the repo" below): a spec is
+read once, so before a task closes, what the spec knew is moved into the repo, where every
+later agent will meet it.
+
 ## What's in the box
 
 | Artifact | What it is |
 |----------|------------|
-| [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md) | The executable-spec format: Goal, Frozen Interface, Out of scope, Failure modes, deterministic Acceptance gate |
+| [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md) | The executable-spec format: Goal, Step 0 facts, Allowed paths (checked, not trusted), Frozen, Out of scope, Failure modes, deterministic Acceptance gate, Habitat delta |
 | [`doctrine/BUILD-FOR-AGENTS.md`](doctrine/BUILD-FOR-AGENTS.md) | **How to build a repo an agent does the right thing in by default**: doctrine in the repo, reasons at the point of violation, machine-enforced boundaries, read seams, written-down failure history — and the honest boundary where the environment stops helping |
 | [`doctrine/TESTING.md`](doctrine/TESTING.md) | Test philosophy: gates, anti-tests, test power, self-measuring probes, "fix the test, never the threshold" |
 | [`skills/research`](skills/research/SKILL.md) | Claude Code skill: investigate before deciding what to build — mint re-checkable claims, or kill/reframe the work they were about to justify |
@@ -60,7 +66,7 @@ it verifies **premises**, the one error class nothing downstream can catch.
 | [`skills/root-cause`](skills/root-cause/SKILL.md) | Claude Code skill: diagnose by measurement before proposing any fix; produces a mechanism, not a patch |
 | [`skills/distill-learning`](skills/distill-learning/SKILL.md) | Claude Code skill: extract portable patterns from a finished phase back into your doctrine |
 | [`templates/`](templates/) | Gate and test-spec worksheets (fatal risk, fixed scenario, PASS threshold, control that must fail) |
-| [`starters/CLAUDE-starter.md`](starters/CLAUDE-starter.md) | Day-one CLAUDE.md for a new repo — the standing rules (write-it-down, testing, tasks) that make every future agent session better. Skills fire on demand; this is in context always. |
+| [`starters/AGENTS-starter.md`](starters/AGENTS-starter.md) | Day-one `AGENTS.md` / `CLAUDE.md` for a new repo — the standing rules (write-it-down, done-means-one-command, boundaries in lint, precedent, testing, tasks) that make every future agent session better. Skills fire on demand; this is in context always. (Was `CLAUDE-starter.md`.) |
 | [`starters/global-standing-rules.md`](starters/global-standing-rules.md) | **User-level** standing rules (stop-at-contradictions, current-state-is-truth, objective-over-proxy, truth-over-approval, red-flags) for your `~/.claude/CLAUDE.md` — the five universal rules that load on every repo. `@import` it once per machine to keep them in sync (see Quickstart). |
 | [`examples/`](examples/) | **Real specs from a real repo** — including a case study of fact-checking a spec set against a moving codebase |
 | [`EVALS.md`](EVALS.md) | **The method tested against a control** — spec vs. bare prompt, same model and task, predictions pre-registered, contaminated run reported rather than dropped |
@@ -81,6 +87,25 @@ that world — including §9, the honest boundary: a good repo makes cheap the j
 **already made and left behind** as precedent. It does nothing for a decision the repo
 has never faced. Those still need a human.
 
+### Specs build the repo
+
+That finding does not retire the spec; it changes its job. The repo that taught those
+agents was itself built task by task, through specs. So a spec has two outputs: the diff,
+and what it leaves behind for the next agent. Two rules follow, both **provisional — a
+proposal drawn from the experiments, not yet measured** (the test is queued as
+Experiment 6 in [`EVALS.md`](EVALS.md)):
+
+- **The enforcement ladder.** A lesson goes to the highest rung that can hold it: a
+  lint/CI check, then a gate with a control that fails, then a comment at the site where
+  the wrong edit would be made, then a rule in the entry file, then a research doc. Text
+  in a spec is the lowest rung — one reader, one time.
+- **Habitat delta.** Every spec ends by naming where each of its traps, frozen items, and
+  decisions will live in the repo after the task. A trap written into a second spec is
+  debt: it belongs in the repo.
+
+If it works, the sign is that specs in a mature area get *shorter*, because they can point
+at the repo instead of repeating it.
+
 ## Why specs and not prompts
 
 A prompt asks a model to be smart. A spec **removes the need**: exact files, frozen
@@ -89,10 +114,12 @@ wrong, and a deterministic acceptance gate. The test of a good spec: *could a
 competent-but-literal agent execute it without asking questions and without inventing
 scope?*
 
-This inverts the economics of model quality. Strong models are scarce and expensive;
-their leverage is highest writing specs and reviewing output — work that transfers.
-A weak model with a tightly-scoped mechanical task outperforms a strong model with
-"improve this area."
+The bet this makes about model economics: strong models are scarce and expensive, and
+their leverage is highest writing specs and reviewing output — work that transfers —
+while a weaker model executes a tightly-scoped mechanical task inside the contract.
+**This is a bet, not a result.** The experiments show a mid-tier model executing specs
+well; the comparison arm that would test the economics (a strong model with no spec) was
+deferred and has not been run.
 
 ## Why deterministic gates and not "tests pass"
 
@@ -112,8 +139,9 @@ bug behind it.
 **The method was tested against a control: [`EVALS.md`](EVALS.md).** The doctrine says a
 test without a control has no power, so the same standard applies to the method itself —
 if an agent handed a full spec ships no better than one handed a two-line prompt, the
-format is decoration. Two arms, same model, same repo, same real task, predictions
-written down before the results. All three arms passed the test suite; **every difference
+format is decoration. Two planned arms (a contaminated control run was kept as a third),
+same model, same repo, same real task, predictions written down before the results. All
+three arms passed the test suite; **every difference
 that mattered was invisible to it** — scope violations, frozen-interface breaks, silent
 judgment calls. One finding worth the click: an agent that *found* the spec in its
 worktree violated its frozen interface anyway. A spec you discover is advice; a spec
@@ -180,15 +208,26 @@ session; a `git pull` on this repo then updates the rules on every machine):
 Or copy the file's contents straight into `~/.claude/CLAUDE.md` if you'd rather not depend
 on the clone path.
 
+On other agents the same five rules go wherever that agent loads user-level instructions
+(in Cursor: User Rules). `npx skills add` installs the skills only — the standing rules
+are a separate, manual step on every agent, and they are the layer the experiments found
+does the most work.
+
 **Adopt the method (any tooling):**
 
-1. Next task bigger than a one-line fix: write it with [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md).
+Start with the repo, then the specs — the experiments' most repeated finding is that the
+repo teaches the agent.
+
+1. Give the repo an entry file from [`starters/AGENTS-starter.md`](starters/AGENTS-starter.md)
+   and **one command** that says whether a change is done (lint + typecheck + tests +
+   build). If that command doesn't exist yet, building it is task zero.
+2. Next task bigger than a one-line fix: write it with [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md).
    If you can't fill in "Failure modes," you don't understand the task well enough to
    delegate it — investigate first.
-2. Put one **gate** on your riskiest invariant using
+3. Put one **gate** on your riskiest invariant using
    [`templates/GATE-TEMPLATE.md`](templates/GATE-TEMPLATE.md), including the control
    that must fail. Add more gates only after the first one pays.
-3. Review agent output with the
+4. Review agent output with the
    [`doctrine-review`](skills/doctrine-review/SKILL.md) checklist before merging.
    Never merge agent output you couldn't have reviewed without the agent.
 
@@ -210,6 +249,11 @@ validated one.**
 - **Small n.** [`EVALS.md`](EVALS.md) has four experiments; the flagship is one task
   across three arms. That is enough to show the spec format changes what ships; it is not
   enough to quantify by how much, or to claim it generalizes.
+- **One run per arm, scored by the author.** No experiment repeated an arm, so run-to-run
+  variance is unmeasured, and the diffs were audited by the person who designed the
+  method, knowing which arm was which. Both repos also already carried the doctrine.
+  Experiment 5 in [`EVALS.md`](EVALS.md) is designed to fix all three (replicates, a blind
+  grader, an ablated repo) — it is a draft and has not run.
 - **Not solo-friendly by accident.** A single owner is why the doctrine can be this
   strict. On a team, the frozen-interface and scope rules need negotiation this repo
   doesn't model.
