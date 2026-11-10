@@ -1,6 +1,6 @@
 # Standing rules — global (user-level)
 
-Non-negotiables that hold in **every** project. Unlike [`CLAUDE-starter.md`](CLAUDE-starter.md)
+Non-negotiables that hold in **every** project. Unlike [`AGENTS-starter.md`](AGENTS-starter.md)
 (which is per-repo, copied into a new repo on day one), these are *user-level*: they belong
 in your `~/.claude/CLAUDE.md` so they load into every session on every codebase. See the
 repo README for the one-line `@import` install that keeps them in sync across machines.
