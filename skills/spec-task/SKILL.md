@@ -104,6 +104,22 @@ Habitat delta.
   well enough to delegate it. Investigate first (run `research`; its claims come
   back as Step 0 candidates with the re-check already written).
 
+## Handing off
+
+A spec the executor finds in the tree is advice; a spec it is handed is the contract
+(EVALS experiment 1: the one frozen-surface violation came from the agent that
+*discovered* the spec). Use `templates/HANDOFF-TEMPLATE.md` —
+`${CLAUDE_PLUGIN_ROOT}/templates/HANDOFF-TEMPLATE.md`, or
+[read it here](https://github.com/MattRosset/executable-specs/blob/main/templates/HANDOFF-TEMPLATE.md)
+— and change nothing in it but the operator lines. If you can't reach it, the handoff
+must still do four things: put the **whole spec inline** in the prompt (not a path, not a
+summary); say it is the contract; repeat the stop rule; and require a final report with
+the gate's real output, `git diff --name-only`, where each Habitat delta row landed, and
+an explicit "not done / not verified" line.
+
+Hand off only after `spec-review`. A reported `blocked` is the stop rule working: fix the
+spec and hand off again, rather than answering the blocker in chat.
+
 ## After execution: close the loop (this is how the method improves itself)
 
 Handing off is half the contract; the other half fires when the diff lands. Triage
