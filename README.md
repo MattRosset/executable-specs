@@ -59,13 +59,14 @@ later agent will meet it.
 | [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md) | The executable-spec format: Goal, Step 0 facts, Allowed paths (checked, not trusted), Frozen, Out of scope, Failure modes, deterministic Acceptance gate, Habitat delta |
 | [`doctrine/BUILD-FOR-AGENTS.md`](doctrine/BUILD-FOR-AGENTS.md) | **How to build a repo an agent does the right thing in by default**: doctrine in the repo, reasons at the point of violation, machine-enforced boundaries, read seams, written-down failure history — and the honest boundary where the environment stops helping |
 | [`doctrine/TESTING.md`](doctrine/TESTING.md) | Test philosophy: gates, anti-tests, test power, self-measuring probes, "fix the test, never the threshold" |
+| [`skills/habitat-audit`](skills/habitat-audit/SKILL.md) | Skill: audit a repo as a habitat for agents (entry file, verify command, enforced boundaries, precedent, failure history, test power) and name the one gap to close first. The entry point for a repo that has never used the method. *Provisional — not yet run against a repo.* |
 | [`skills/research`](skills/research/SKILL.md) | Claude Code skill: investigate before deciding what to build — mint re-checkable claims, or kill/reframe the work they were about to justify |
 | [`skills/spec-task`](skills/spec-task/SKILL.md) | Claude Code skill: write a spec a weaker agent can execute without judgment calls |
 | [`skills/doctrine-review`](skills/doctrine-review/SKILL.md) | Claude Code skill: review a diff against the doctrine — test power, determinism, scope, freeze |
 | [`skills/spec-review`](skills/spec-review/SKILL.md) | Claude Code skill: verify a spec against the live code before handoff — facts, consistency, judgment quarantine (the pass EVALS proved non-optional) |
 | [`skills/root-cause`](skills/root-cause/SKILL.md) | Claude Code skill: diagnose by measurement before proposing any fix; produces a mechanism, not a patch |
 | [`skills/distill-learning`](skills/distill-learning/SKILL.md) | Claude Code skill: extract portable patterns from a finished phase back into your doctrine |
-| [`templates/`](templates/) | Gate and test-spec worksheets (fatal risk, fixed scenario, PASS threshold, control that must fail) |
+| [`templates/`](templates/) | Gate and test-spec worksheets (fatal risk, fixed scenario, PASS threshold, control that must fail), and [`HANDOFF-TEMPLATE.md`](templates/HANDOFF-TEMPLATE.md) — the fixed prompt that hands a spec to an executor as a contract, with the report it must return |
 | [`starters/AGENTS-starter.md`](starters/AGENTS-starter.md) | Day-one `AGENTS.md` / `CLAUDE.md` for a new repo — the standing rules (write-it-down, done-means-one-command, boundaries in lint, precedent, testing, tasks) that make every future agent session better. Skills fire on demand; this is in context always. (Was `CLAUDE-starter.md`.) |
 | [`starters/global-standing-rules.md`](starters/global-standing-rules.md) | **User-level** standing rules (stop-at-contradictions, current-state-is-truth, objective-over-proxy, truth-over-approval, red-flags) for your `~/.claude/CLAUDE.md` — the five universal rules that load on every repo. `@import` it once per machine to keep them in sync (see Quickstart). |
 | [`examples/`](examples/) | **Real specs from a real repo** — including a case study of fact-checking a spec set against a moving codebase |
@@ -175,11 +176,11 @@ where it runs for real. A few receipts:
 npx skills add MattRosset/executable-specs
 ```
 
-That installs all six skills. The CLI will ask which agents to target and whether
+That installs all seven skills. The CLI will ask which agents to target and whether
 to install for this project or globally (`-g` if you already know). Pass `-a cursor`
 or `-a claude-code` to skip the agent prompt. To install one skill only:
-`--skill spec-task` (or `research`, `spec-review`, `doctrine-review`, `root-cause`,
-`distill-learning`). Update later with `npx skills update`.
+`--skill spec-task` (or `habitat-audit`, `research`, `spec-review`, `doctrine-review`,
+`root-cause`, `distill-learning`). Update later with `npx skills update`.
 
 **Claude Code plugin** (alternative — same skills, Claude only):
 
@@ -220,10 +221,14 @@ repo teaches the agent.
 
 1. Give the repo an entry file from [`starters/AGENTS-starter.md`](starters/AGENTS-starter.md)
    and **one command** that says whether a change is done (lint + typecheck + tests +
-   build). If that command doesn't exist yet, building it is task zero.
+   build). If that command doesn't exist yet, building it is task zero. In an existing
+   repo, run [`habitat-audit`](skills/habitat-audit/SKILL.md) first: it tells you which
+   gap is the expensive one instead of assuming it is this one.
 2. Next task bigger than a one-line fix: write it with [`SPEC-TEMPLATE.md`](SPEC-TEMPLATE.md).
    If you can't fill in "Failure modes," you don't understand the task well enough to
-   delegate it — investigate first.
+   delegate it — investigate first. Hand it to the executor with
+   [`templates/HANDOFF-TEMPLATE.md`](templates/HANDOFF-TEMPLATE.md) — the spec inline, as
+   the contract.
 3. Put one **gate** on your riskiest invariant using
    [`templates/GATE-TEMPLATE.md`](templates/GATE-TEMPLATE.md), including the control
    that must fail. Add more gates only after the first one pays.
