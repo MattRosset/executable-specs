@@ -24,17 +24,30 @@ One sentence. Be specific.
 | Input A | | Stresses the bug class |
 | Input B | | |
 | Duration / iterations | | |
-| Environment | unit / browser / built `dist` | |
+| Environment | unit / integration / built artifact | |
+| Pinned adaptive inputs | e.g. quality tier, pool size, retry count, clock, PRNG seed | Anything the machine would otherwise steer is held constant — unconditionally, not `if (CI)` |
+
+**Production path:** [the function / route / shader the gate exercises] — the same code
+production runs, not a model of it. A gate on a parallel path stays green while the real
+one is broken.
 
 ---
 
 ## PASS criteria (machine-enforceable)
 
-| Check | Threshold | Command / probe |
-|-------|-----------|-----------------|
-| Primary | e.g. `< 0.5 px`, `< 1 ms`, `100% 403` | `npm test -- gate-foo` |
+A threshold is a number **or an invariant**. Where the domain has no natural number, the
+contract plays that role: idempotency, tenant scope, conservation (nothing dropped,
+nothing duplicated), a state machine's forbidden transitions.
+
+| Check | Threshold or invariant | Command / probe |
+|-------|------------------------|-----------------|
+| Primary | e.g. `< 0.5 px`, `< 1 ms`, every cross-tenant id → `403`, second call returns the same row, `count(out) == count(in)` | `npm test -- gate-foo` |
 | Secondary | | |
+| Work metric (required beside any speed/size metric) | e.g. items processed, points drawn, bytes served `> 0` and as expected | same run |
 | Slow gate (optional) | same threshold | `e2e/gate-foo.spec.ts` |
+
+**On failure, the check logs:** the chosen input and the measured quantity — enough to
+triage a CI-only failure without a local reproduction.
 
 ---
 
@@ -59,7 +72,15 @@ One sentence. Be specific.
 
 **Assertion:** control result must **violate** the PASS threshold.
 
+**Observed (fill in after running, don't predict):**
+
+| Path | Measured | Verdict |
+|------|----------|---------|
+| Proper | | PASS |
+| Naive control | | FAIL |
+
 > If the control ever passes, the test lost power — **fix the test, not the gate**.
+> A control that was never run is a hypothesis about the test, not evidence of its power.
 
 ---
 
@@ -68,16 +89,19 @@ One sentence. Be specific.
 | Layer | File / mode | Runs |
 |-------|-------------|------|
 | Fast | `test/gate-foo.test.ts` | every `verify` |
-| Slow | `?debug=foo` + `e2e/gate-foo.spec.ts` | CI e2e job |
+| Slow | integration / E2E on the built artifact | CI job — and a local command: `…` |
 
 ---
 
-## Self-measuring probe (if slow gate)
+## Self-measuring probe (optional — only if the slow gate needs the running system)
 
-- URL flag: `?debug=____`
+The system measures itself; the test runner only reads the result.
+
+- Entry point: a debug flag, diagnostic endpoint, or CLI switch (browser apps:
+  `?debug=____`) — zero cost when absent
 - Warm-up: discard first N frames / requests
-- Export: `window.__fooResult = { … }`
-- E2E: read result only; no complex measurement in Playwright
+- Export: a structured result object (browser apps: `window.__fooResult = { … }`)
+- Runner: read the result and assert; no measurement logic in the test
 
 ---
 
@@ -109,4 +133,5 @@ Manual items CI cannot judge:
 ## References
 
 - Architecture / ADR:
-- Prior art (cosmos TASK-006 pattern):
+- Research doc for the bug class (if it already happened):
+- Prior art (an earlier gate in this repo to copy the shape from):
